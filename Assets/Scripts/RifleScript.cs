@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class RifleScript : MonoBehaviour
 {
+
+    [SerializeField] GameObject bullet;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -15,4 +18,11 @@ public class RifleScript : MonoBehaviour
     {
         
     }
+
+    void FireWeapon(){
+
+        Instantiate(bullet);
+
+    }
+
 }

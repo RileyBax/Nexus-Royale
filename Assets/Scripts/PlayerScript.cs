@@ -1,12 +1,13 @@
 using System;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerScript : MonoBehaviour
 {
 
     private Rigidbody2D rb;
-    private GameObject weapon;
+    public GameObject weapon;
     private Vector2 weaponPos;
     private Vector3 mousePos;
     private float angle;
@@ -37,7 +38,11 @@ public class PlayerScript : MonoBehaviour
             weapon.transform.position = weaponPos;
             weapon.transform.up = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y);
 
+            if(Input.GetMouseButtonDown(0)) weapon.SendMessage("FireWeapon");
+
         }
+
+        
 
     }
 
@@ -48,9 +53,14 @@ public class PlayerScript : MonoBehaviour
 
     }
 
-    void OnCollisionEnter2D(){
+    void OnTriggerEnter2D(Collider2D col){
 
-        Debug.Log("here");
+        if(col.tag == "Weapon"){
+
+            weapon = col.gameObject;
+            hasWeapon = true;
+
+        }
 
     }
 
