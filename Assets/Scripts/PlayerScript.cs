@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.UI;
@@ -15,8 +17,10 @@ public class PlayerScript : MonoBehaviour
     private float angle;
     private UnityEngine.UI.Image[] inventoryUI = new UnityEngine.UI.Image[3];
     private GameObject[] inventory = new GameObject[3];
-    [SerializeField] GameObject hud;
+    [SerializeField] private GameObject hud;
     private int selectedWeapon = 0;
+    private int health = 100;
+    private bool isEquipped;
 
     // Start is called before the first frame update
     void Start()
@@ -50,25 +54,15 @@ public class PlayerScript : MonoBehaviour
 
         if(Input.anyKeyDown){
 
-            switch(Input.inputString){
+            Int32.TryParse(Input.inputString, out int inputNum);
 
-                case "1":
-                    changeWeapon(0);
-                    break;
-                case "2":
-                    changeWeapon(1);
-                    break;
-                case "3":
-                    changeWeapon(2);
-                    break;
-
-            }
+            if(inputNum >= 1 && inputNum <= 3) changeWeapon(inputNum - 1);
 
         }
 
         for(int i = 0; i < inventoryUI.Length; i++){
             
-            if(i != selectedWeapon) inventoryUI[i].color = Color.white;
+            if(i != selectedWeapon) inventoryUI[i].color = Color.grey;
             else inventoryUI[i].color = Color.blue;
 
         }
@@ -84,12 +78,21 @@ public class PlayerScript : MonoBehaviour
     
     void OnTriggerStay2D(Collider2D col){
 
-        if(col.tag == "Weapon" && Input.GetKey(KeyCode.E)){
+        if(col.tag == "Weapon"){
 
-            weapon = col.gameObject;
+            col.gameObject.SendMessage("getEquipped", transform.gameObject);
 
-            inventoryUI[selectedWeapon].sprite = Resources.Load<Sprite>("Rifle_Texture");
-            inventory[selectedWeapon] = col.gameObject;
+            if(Input.GetKey(KeyCode.E) && !isEquipped){
+
+                weapon = col.gameObject;
+
+                if(inventory[selectedWeapon] != null) inventory[selectedWeapon].SendMessage("setEquipped", false);
+
+                inventoryUI[selectedWeapon].sprite = weapon.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
+                inventory[selectedWeapon] = col.gameObject;
+                col.gameObject.SendMessage("setEquipped", true);
+
+            }
 
         }
 
@@ -103,10 +106,31 @@ public class PlayerScript : MonoBehaviour
 
     public void changeWeapon(int selected){
 
+        // fix weapon angle jitter on swap
+
         selectedWeapon = selected;
 
         if(weapon != null) weapon.gameObject.SetActive(false);
-        if(inventory[selectedWeapon] != null) weapon.gameObject.SetActive(true);
+        if(inventory[selectedWeapon] != null) {
+
+            weapon = inventory[selectedWeapon];
+            weapon.gameObject.SetActive(true);
+
+        }
+        else weapon = null;
+
+    }
+
+    public void updateHealth(int damage){
+
+        health -= damage;
+        if(health <= 0) transform.gameObject.SetActive(false);
+
+    }
+
+    void setIsEquipped(bool e){
+
+        isEquipped = e;
 
     }
 

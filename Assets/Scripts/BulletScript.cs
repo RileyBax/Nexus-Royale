@@ -10,6 +10,8 @@ public class BulletScript : MonoBehaviour
     private GameObject player;
     private GameObject weapon;
     private float timer;
+    private int angle = 0;
+    private int damage = 30;
 
     // Start is called before the first frame update
     void Start(){
@@ -21,6 +23,8 @@ public class BulletScript : MonoBehaviour
 
         transform.position = weapon.transform.position + (weapon.transform.position - player.transform.position);
         transform.up = weapon.transform.up;
+
+        transform.Rotate(0, 0, angle);
 
     }
 
@@ -35,5 +39,16 @@ public class BulletScript : MonoBehaviour
 
     }
 
+    void init(int a){
+
+        angle = a;
+
+    }
+
+    void OnTriggerEnter2D(Collider2D col){
+
+        if(col.tag == "Character") col.SendMessage("updateHealth", damage);
+
+    }
 
 }
