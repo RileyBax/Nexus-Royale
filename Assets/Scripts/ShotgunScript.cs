@@ -7,6 +7,7 @@ public class ShotgunScript : MonoBehaviour
     [SerializeField] GameObject bullet;
     private float fireRate = 0.0f;
     private bool isEquipped = false;
+    GameObject character;
 
     // Start is called before the first frame update
     void Start()
@@ -28,9 +29,9 @@ public class ShotgunScript : MonoBehaviour
 
             fireRate = 1.5f;
 
-            Instantiate(bullet);
-            Instantiate(bullet).SendMessage("init", -10);
-            Instantiate(bullet).SendMessage("init", 10);
+            Instantiate(bullet).SendMessage("init", new BulletInit(0, character, this.gameObject));
+            Instantiate(bullet).SendMessage("init", new BulletInit(-10, character, this.gameObject));
+            Instantiate(bullet).SendMessage("init", new BulletInit(10, character, this.gameObject));
 
         }
 
@@ -39,6 +40,18 @@ public class ShotgunScript : MonoBehaviour
     void setEquipped(bool e){
 
         isEquipped = e;
+
+    }
+
+    void setCharacter(GameObject c){
+
+        character = c;
+
+    }
+
+    void setCharacterNull(){
+
+        character = null;
 
     }
 

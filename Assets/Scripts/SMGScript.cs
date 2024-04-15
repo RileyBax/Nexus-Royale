@@ -7,6 +7,7 @@ public class SMGScript : MonoBehaviour
     [SerializeField] GameObject bullet;
     private float fireRate = 0.0f;
     private bool isEquipped = false;
+    GameObject character;
 
     // Start is called before the first frame update
     void Start()
@@ -28,7 +29,7 @@ public class SMGScript : MonoBehaviour
 
             fireRate = 0.2f;
 
-            Instantiate(bullet);
+            Instantiate(bullet).SendMessage("init", new BulletInit(0, character, this.gameObject));
 
         }
 
@@ -40,9 +41,21 @@ public class SMGScript : MonoBehaviour
 
     }
 
+    void setCharacterNull(){
+
+        character = null;
+
+    }
+
+    void setCharacter(GameObject c){
+
+        character = c;
+
+    }
+
     void getEquipped(GameObject bot){
 
-        bot.SendMessage("setIsEquipped", isEquipped);
+        if(bot.activeSelf) bot.SendMessage("setIsEquipped", isEquipped);
 
     }
 

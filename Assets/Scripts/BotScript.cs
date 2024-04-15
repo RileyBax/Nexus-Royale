@@ -1,4 +1,6 @@
 using System;
+using System.Threading;
+using TreeEditor;
 using UnityEngine;
 
 public class BotScript : MonoBehaviour
@@ -17,10 +19,18 @@ public class BotScript : MonoBehaviour
     private System.Random rand = new System.Random();
     private int state = 0; // 0 = searching for weapon, 1 = has weapon searching for player, 2 = attacking player
     private int health = 100;
+    private Collider2D[] hitColliders;
+    private GameObject target;
+    private Vector2 zone;
+    private float wanderAngle;
+    private float waitTimer;
 
     // Start is called before the first frame update
     void Start()
     {
+        
+        // have game manager set zone center position
+        zone = new Vector2(0, 0);
 
     }
 
@@ -32,7 +42,7 @@ public class BotScript : MonoBehaviour
 
             if(weaponNear == null){
                     
-                Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, 10);
+                hitColliders = Physics2D.OverlapCircleAll(transform.position, 10);
                 
                 for(int i = 0; i < hitColliders.Length; i++){
 
@@ -49,14 +59,11 @@ public class BotScript : MonoBehaviour
                 }
 
             }
-
-            // find closest angle to in 45deg, move towards object on that axis until collide
-
-            if(directionTimer <= 0.0f){
+            else if(directionTimer <= 0.0f){
 
                 directionTimer = (float) rand.NextDouble();
 
-                weaponNearAngle = -(float) Math.Atan2(transform.position.x - weaponNear.transform.position.x - 0.5f, transform.position.y - weaponNear.transform.position.y) + 3.14f;
+                weaponNearAngle = -(float) Math.Atan2(transform.position.x - weaponNear.transform.position.x + 0.5f, transform.position.y - weaponNear.transform.position.y) + 3.14f;
 
                 movePoint = new Vector3();
                 float tempMoveAngle = 10.0f;
@@ -82,15 +89,105 @@ public class BotScript : MonoBehaviour
 
             // check if weapon is picked up by another bot/player
 
-            weaponNear.SendMessage("getEquipped", transform.gameObject);
-            if(weaponNearEquipped) weaponNear = null;
+            if(weaponNear != null){
+
+                weaponNear.SendMessage("getEquipped", transform.gameObject);
+                if(weaponNearEquipped) weaponNear = null;
+
+            }
 
         }
         else if(state == 1){
 
-            updateWeapon();
+            if(target == null || !target.activeSelf){
 
-            //  search for player ------------------------
+                hitColliders = Physics2D.OverlapCircleAll(transform.position, 10);
+
+                for(int i = 0; i < hitColliders.Length; i++){
+
+                    if(target == null && hitColliders[i].tag.Equals("Character") && hitColliders[i].gameObject != transform.gameObject) target = hitColliders[i].gameObject;
+                    else if(target != null && Vector3.Distance(target.transform.position, transform.position) > Vector3.Distance(transform.position, hitColliders[i].gameObject.transform.position)
+                    && hitColliders[i].tag.Equals("Character") && hitColliders[i].gameObject != transform.gameObject) target = hitColliders[i].gameObject;
+
+                }
+
+                if(target != null) state = 2;
+
+            }
+
+            if(target == null && Vector3.Distance(movePoint, transform.position) < 0.1f && waitTimer <= 0.0f){
+
+                // expand search, make bot wander
+                // wander towards center of zone
+
+
+                // change this to pick one of 8 45 deg angles to walk in
+                // -------------------------------------------------------------------------------
+
+                wanderAngle = -(float) Math.Atan2(rand.Next((int)(transform.position.x - zone.x - 10), (int)(transform.position.x - zone.x + 10)), 
+                rand.Next((int)(transform.position.y - zone.y - 10), (int)(transform.position.y - zone.y + 10))) + 3.14f;
+
+                movePoint = new Vector3();
+                float tempMoveAngle = 10.0f;
+
+                for(int i = 0; i < 8; i++){
+
+                    if(Math.Abs(wanderAngle - i * 0.785f) < Math.Abs(wanderAngle  - tempMoveAngle)) tempMoveAngle = i * 0.785f;
+
+                }
+
+                moveAngle = -tempMoveAngle;
+
+                movePoint.x = (float) (transform.position.x + Math.Sin(moveAngle) * 5);
+                movePoint.y = (float) (transform.position.y + Math.Cos(moveAngle) * 5);
+
+                waitTimer = (float)(rand.NextDouble() * 5);
+                // -------------------------------------------------------------------------------
+
+            }
+
+            waitTimer -= Time.deltaTime;
+            
+            updateWeapon();
+            hasWeaponCheck();
+
+        }
+        else if(state == 2){
+
+            if(target.activeSelf) {
+                
+                updateWeapon();
+
+                if(Vector3.Distance(movePoint, transform.position) < 0.1f){
+
+                    wanderAngle = -(float) Math.Atan2(rand.Next((int)(transform.position.x - target.transform.position.x - 5), (int)(transform.position.x - target.transform.position.x + 10)), 
+                    rand.Next((int)(transform.position.y - target.transform.position.y - 5), (int)(transform.position.y - target.transform.position.y + 5))) + 3.14f;
+
+                    movePoint = new Vector3();
+                    float tempMoveAngle = 10.0f;
+
+                    for(int i = 0; i < 8; i++){
+
+                        if(Math.Abs(wanderAngle - i * 0.785f) < Math.Abs(wanderAngle  - tempMoveAngle)) tempMoveAngle = i * 0.785f;
+
+                    }
+
+                    moveAngle = -tempMoveAngle;
+
+                    movePoint.x = (float) (transform.position.x + Math.Sin(moveAngle) * 5);
+                    movePoint.y = (float) (transform.position.y + Math.Cos(moveAngle) * 5);
+
+                }
+
+            }
+            else{
+
+                state = 1;
+                target = null;
+
+            }
+
+            hasWeaponCheck();
 
         }
 
@@ -112,18 +209,15 @@ public class BotScript : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D col){
 
-        if(col.tag.Equals("Weapon")){
+        if(col.tag.Equals("Weapon") && state == 0){
 
             col.gameObject.SendMessage("getEquipped", transform.gameObject);
 
             if(!weaponNearEquipped){
 
-                // create variable for weapon
-                // set weapon to follow bot, use player code
-                // find angle and aim at near player/bot
-
                 weapon = col.gameObject;
                 col.gameObject.SendMessage("setEquipped", true);
+                col.gameObject.SendMessage("setCharacter", transform.gameObject);
 
                 state = 1;
 
@@ -135,11 +229,20 @@ public class BotScript : MonoBehaviour
 
     void updateWeapon(){
 
+        if(target != null) {
+
+            weapon.transform.up = new Vector2(target.transform.position.x - transform.position.x, target.transform.position.y - transform.position.y);
+
+            angle = -(float) Math.Atan2(target.transform.position.y - transform.position.y, target.transform.position.x - transform.position.x) + 1.55f;
+
+            weapon.SendMessage("FireWeapon");
+
+        }
+
         weaponPos.x = (float) (transform.position.x + Math.Sin(angle) * 1);
         weaponPos.y = (float) (transform.position.y + Math.Cos(angle) * 1);
 
         weapon.transform.position = weaponPos;
-        weapon.transform.up = new Vector2(weaponPos.x - transform.position.x, weaponPos.y - transform.position.y);
 
     }
 
@@ -150,8 +253,26 @@ public class BotScript : MonoBehaviour
         if(health <= 0) {
 
             transform.gameObject.SetActive(false);
-            weapon.SendMessage("setEquipped", false);
             
+            if(weapon != null) {
+
+                weapon.SendMessage("setEquipped", false);
+                weapon.SendMessage("setCharacterNull");
+
+            }
+            
+        }
+
+    }
+
+    void hasWeaponCheck(){
+
+        //incase bot gets stuck with no weapon
+        if(weapon == null || !weapon.activeSelf) {
+                
+            state = 0;
+            weaponNear = null;
+
         }
 
     }

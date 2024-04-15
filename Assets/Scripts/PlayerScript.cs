@@ -86,11 +86,18 @@ public class PlayerScript : MonoBehaviour
 
                 weapon = col.gameObject;
 
-                if(inventory[selectedWeapon] != null) inventory[selectedWeapon].SendMessage("setEquipped", false);
+                if(inventory[selectedWeapon] != null) {
+                    
+                    inventory[selectedWeapon].SendMessage("setEquipped", false);
+                    inventory[selectedWeapon].SendMessage("setCharacterNull");
+
+                }
 
                 inventoryUI[selectedWeapon].sprite = weapon.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
                 inventory[selectedWeapon] = col.gameObject;
                 col.gameObject.SendMessage("setEquipped", true);
+                col.gameObject.SendMessage("setCharacter", transform.gameObject);
+                // can change above to remove equipped boolean but dont want to
 
             }
 

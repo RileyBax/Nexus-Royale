@@ -7,7 +7,7 @@ public class BulletScript : MonoBehaviour
 {
 
     private Rigidbody2D rb;
-    private GameObject player;
+    private GameObject character;
     private GameObject weapon;
     private float timer;
     private int angle = 0;
@@ -16,12 +16,11 @@ public class BulletScript : MonoBehaviour
     // Start is called before the first frame update
     void Start(){
 
-        player = GameObject.Find("Player");
         rb = GetComponent<Rigidbody2D>();
-        weapon = player.GetComponent<PlayerScript>().getWeapon();
         timer = 5.0f;
 
-        transform.position = weapon.transform.position + (weapon.transform.position - player.transform.position);
+        transform.position = weapon.transform.position + (weapon.transform.position - character.transform.position);
+        
         transform.up = weapon.transform.up;
 
         transform.Rotate(0, 0, angle);
@@ -39,15 +38,20 @@ public class BulletScript : MonoBehaviour
 
     }
 
-    void init(int a){
+    void init(BulletInit bInit){
 
-        angle = a;
+        angle = bInit.angle;
+        character = bInit.character;
+        weapon = bInit.weapon;
 
     }
 
     void OnTriggerEnter2D(Collider2D col){
 
-        if(col.tag == "Character") col.SendMessage("updateHealth", damage);
+        // causing error when bullet hits but character is not active
+        if(col.tag == "Character" && col.gameObject.activeSelf) {
+            col.SendMessage("updateHealth", damage);
+        }
 
     }
 
