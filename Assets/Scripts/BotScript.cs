@@ -38,10 +38,12 @@ public class BotScript : MonoBehaviour
     void Update()
     {
         
+        // Searching for weapon
         if(state == 0){
 
             if(weaponNear == null){
-                    
+                
+                // Check for weapon in circle around character
                 hitColliders = Physics2D.OverlapCircleAll(transform.position, 10);
                 
                 for(int i = 0; i < hitColliders.Length; i++){
@@ -59,6 +61,7 @@ public class BotScript : MonoBehaviour
                 }
 
             }
+            // Changes direction the bot is moving in, stops bot jittering
             else if(directionTimer <= 0.0f){
 
                 directionTimer = (float) rand.NextDouble();
@@ -81,8 +84,6 @@ public class BotScript : MonoBehaviour
 
             }
 
-            Debug.DrawLine(transform.position, movePoint);
-
             // set timer for change direction of bot movement
 
             directionTimer -= Time.deltaTime;
@@ -96,11 +97,15 @@ public class BotScript : MonoBehaviour
 
             }
 
+            // TODO: Make bot wander to center of zone if it cant find a weapon
+
         }
+        // Has weapon, searching for target
         else if(state == 1){
 
             if(target == null || !target.activeSelf){
 
+                // Check for target in circle
                 hitColliders = Physics2D.OverlapCircleAll(transform.position, 10);
 
                 for(int i = 0; i < hitColliders.Length; i++){
@@ -115,11 +120,8 @@ public class BotScript : MonoBehaviour
 
             }
 
+            // If target not found, wander towards center of zone
             if(target == null && Vector3.Distance(movePoint, transform.position) < 0.1f && waitTimer <= 0.0f){
-
-                // expand search, make bot wander
-                // wander towards center of zone
-
 
                 // change this to pick one of 8 45 deg angles to walk in
                 // -------------------------------------------------------------------------------
@@ -145,13 +147,13 @@ public class BotScript : MonoBehaviour
                 // -------------------------------------------------------------------------------
 
             }
-
             waitTimer -= Time.deltaTime;
             
             updateWeapon();
             hasWeaponCheck();
 
         }
+        // Target found, starts firing and moving around target position
         else if(state == 2){
 
             if(target.activeSelf) {
@@ -195,18 +197,22 @@ public class BotScript : MonoBehaviour
 
     void FixedUpdate(){
 
+        // Moves character in direction
+
         Vector2 moveDir = new Vector2(movePoint.x - transform.position.x, movePoint.y - transform.position.y).normalized;
 
         rb.MovePosition(rb.position + moveDir * Time.deltaTime * 5);
 
     }
 
+    // Sets currently equiped weapon, called from weapon script
     void setIsEquipped(bool e){
 
         weaponNearEquipped = e;
 
     }
 
+    // Handles collisions with weapons
     void OnTriggerEnter2D(Collider2D col){
 
         if(col.tag.Equals("Weapon") && state == 0){
@@ -227,6 +233,7 @@ public class BotScript : MonoBehaviour
 
     }
 
+    // Updates rotation of equipped weapon
     void updateWeapon(){
 
         if(target != null) {
@@ -246,6 +253,7 @@ public class BotScript : MonoBehaviour
 
     }
 
+    // Updates health, called from bullets script
     void updateHealth(int damage){
 
         health -= damage;

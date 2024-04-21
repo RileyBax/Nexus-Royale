@@ -7,11 +7,12 @@ TagManager:
   - Weapon
   - Bullet
   - Character
+  - Object
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Character
   - Water
   - UI
   - 

@@ -31,6 +31,8 @@ public class BulletScript : MonoBehaviour
     void Update()
     {
         
+        // Moves on local Y axis until destroyed
+
         rb.transform.Translate(0, 10 * Time.deltaTime, 0);
         timer -= Time.deltaTime;
 
@@ -38,6 +40,7 @@ public class BulletScript : MonoBehaviour
 
     }
 
+    // Initializes bullet, called from weapon script
     void init(BulletInit bInit){
 
         angle = bInit.angle;
@@ -51,7 +54,9 @@ public class BulletScript : MonoBehaviour
         // causing error when bullet hits but character is not active
         if(col.tag == "Character" && col.gameObject.activeSelf) {
             col.SendMessage("updateHealth", damage);
+            Destroy(transform.root.gameObject);
         }
+        else if(col.tag == "Object") Destroy(transform.root.gameObject);
 
     }
 

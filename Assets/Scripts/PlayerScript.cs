@@ -38,8 +38,10 @@ public class PlayerScript : MonoBehaviour
 
         mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
+        // Angle to mouse position
         angle = -(float) Math.Atan2(mousePos.y - transform.position.y, mousePos.x - transform.position.x) + 1.55f;
 
+        // Rotates weapon towards mouse
         if(weapon != null){
 
             weaponPos.x = (float) (transform.position.x + Math.Sin(angle) * 1);
@@ -52,6 +54,7 @@ public class PlayerScript : MonoBehaviour
 
         }
 
+        // Inventory selection
         if(Input.anyKeyDown){
 
             Int32.TryParse(Input.inputString, out int inputNum);
@@ -60,6 +63,7 @@ public class PlayerScript : MonoBehaviour
 
         }
 
+        // Sets selected inventory slot colour
         for(int i = 0; i < inventoryUI.Length; i++){
             
             if(i != selectedWeapon) inventoryUI[i].color = Color.grey;
@@ -72,10 +76,13 @@ public class PlayerScript : MonoBehaviour
     void FixedUpdate()
     {
         
+        // Moves player in input direction
+
         rb.MovePosition(rb.position + new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized * Time.deltaTime * 5);
 
     }
     
+    // Handles collisions and weapon equip
     void OnTriggerStay2D(Collider2D col){
 
         if(col.tag == "Weapon"){
@@ -111,6 +118,7 @@ public class PlayerScript : MonoBehaviour
 
     }
 
+    // Swap weapon between those in inventory
     public void changeWeapon(int selected){
 
         // fix weapon angle jitter on swap
@@ -128,6 +136,7 @@ public class PlayerScript : MonoBehaviour
 
     }
 
+    // Updates health, called from bullet script
     public void updateHealth(int damage){
 
         health -= damage;

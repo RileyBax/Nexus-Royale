@@ -1,6 +1,7 @@
 using Unity.VisualScripting;
 using UnityEngine;
 
+// Use this class to initialize a bullet prefab
 public class BulletInit{
 
     public int angle;
