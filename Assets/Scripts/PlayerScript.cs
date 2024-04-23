@@ -28,8 +28,11 @@ public class PlayerScript : MonoBehaviour
 
         rb = GetComponent<Rigidbody2D>();
         weaponPos = new Vector2();
+        hud = GameObject.Find("HUD");
 
         for(int i = 0; i < inventoryUI.Length; i++) inventoryUI[i] = hud.transform.GetChild(0).GetChild(i).GetComponent<UnityEngine.UI.Image>();
+
+        GameObject.Find("Main Camera").SendMessage("setPlayer", this.gameObject);
 
     }
 

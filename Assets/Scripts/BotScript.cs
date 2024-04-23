@@ -98,6 +98,33 @@ public class BotScript : MonoBehaviour
             }
 
             // TODO: Make bot wander to center of zone if it cant find a weapon
+            if(target == null && Vector3.Distance(movePoint, transform.position) < 0.1f && waitTimer <= 0.0f){
+
+                // change this to pick one of 8 45 deg angles to walk in
+                // -------------------------------------------------------------------------------
+
+                wanderAngle = -(float) Math.Atan2(rand.Next((int)(transform.position.x - zone.x - 30), (int)(transform.position.x - zone.x + 30)), 
+                rand.Next((int)(transform.position.y - zone.y - 30), (int)(transform.position.y - zone.y + 30))) + 3.14f;
+
+                movePoint = new Vector3();
+                float tempMoveAngle = 10.0f;
+
+                for(int i = 0; i < 8; i++){
+
+                    if(Math.Abs(wanderAngle - i * 0.785f) < Math.Abs(wanderAngle  - tempMoveAngle)) tempMoveAngle = i * 0.785f;
+
+                }
+
+                moveAngle = -tempMoveAngle;
+
+                movePoint.x = (float) (transform.position.x + Math.Sin(moveAngle) * 5);
+                movePoint.y = (float) (transform.position.y + Math.Cos(moveAngle) * 5);
+
+                waitTimer = (float)(rand.NextDouble() * 5);
+                // -------------------------------------------------------------------------------
+
+            }
+            waitTimer -= Time.deltaTime;
 
         }
         // Has weapon, searching for target
@@ -106,7 +133,7 @@ public class BotScript : MonoBehaviour
             if(target == null || !target.activeSelf){
 
                 // Check for target in circle
-                hitColliders = Physics2D.OverlapCircleAll(transform.position, 10);
+                hitColliders = Physics2D.OverlapCircleAll(transform.position, 20);
 
                 for(int i = 0; i < hitColliders.Length; i++){
 
@@ -192,7 +219,9 @@ public class BotScript : MonoBehaviour
             hasWeaponCheck();
 
         }
-
+        //TODO: Add check for bot stuck, set timer then choose new position to walk to
+        // fix bot jitter
+        // check if point moving to is inside of wall collider
     }
 
     void FixedUpdate(){
