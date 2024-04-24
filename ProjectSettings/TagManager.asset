@@ -8,7 +8,6 @@ TagManager:
   - Bullet
   - Character
   - Object
-  - Water
   layers:
   - Default
   - TransparentFX

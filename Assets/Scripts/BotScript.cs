@@ -17,15 +17,16 @@ public class BotScript : MonoBehaviour
     private Vector3 movePoint;
     private float directionTimer = 0.0f;
     private System.Random rand = new System.Random();
-    public int state = 0; // 0 = searching for weapon, 1 = has weapon searching for player, 2 = attacking player
+    private int state = 0; // 0 = searching for weapon, 1 = has weapon searching for player, 2 = attacking player
     private int health = 100;
     private Collider2D[] hitColliders;
     private GameObject target;
     private Vector2 zone;
     private float wanderAngle;
     private float waitTimer;
-    public float offsetTimer = 2.0f;
-    private int offset;
+    public float stuckTimer  = 2.0f;
+    private Vector3 lastPos;
+    public bool isStuck = false;
 
     // Start is called before the first frame update
     void Start()
@@ -126,7 +127,6 @@ public class BotScript : MonoBehaviour
                 // -------------------------------------------------------------------------------
 
             }
-            else if(Vector3.Distance(movePoint, transform.position) < 0.1f && waitTimer > 0.0f) movePoint = transform.position;
             waitTimer -= Time.deltaTime;
 
         }
@@ -158,6 +158,7 @@ public class BotScript : MonoBehaviour
 
                 wanderAngle = -(float) Math.Atan2(rand.Next((int)(transform.position.x - zone.x - 10), (int)(transform.position.x - zone.x + 10)), 
                 rand.Next((int)(transform.position.y - zone.y - 10), (int)(transform.position.y - zone.y + 10))) + 3.14f;
+
                 movePoint = new Vector3();
                 float tempMoveAngle = 10.0f;
 
@@ -176,7 +177,6 @@ public class BotScript : MonoBehaviour
                 // -------------------------------------------------------------------------------
 
             }
-            else if(Vector3.Distance(movePoint, transform.position) < 0.1f && waitTimer > 0.0f) movePoint = transform.position;
             waitTimer -= Time.deltaTime;
             
             updateWeapon();
@@ -226,6 +226,19 @@ public class BotScript : MonoBehaviour
         // fix bot jitter
         // check if point moving to is inside of wall collider
 
+        if(Vector3.Distance(transform.position, lastPos) <= 0.1f)stuckTimer -= Time.deltaTime;
+        else {
+            isStuck = true;
+            stuckTimer = 2.0f;
+            lastPos = transform.position;
+        }
+
+        if(stuckTimer <= 0.0f) {
+            isStuck = false;
+            movePoint = transform.position;
+            stuckTimer = 2.0f;
+        }
+
     }
 
     void FixedUpdate(){
@@ -264,21 +277,6 @@ public class BotScript : MonoBehaviour
 
         }
 
-    }
-
-    void OnCollisionStay2D(Collision2D col){
-
-        if(offsetTimer <= 0.0f) {
-            offset = UnityEngine.Random.Range(0, 1) * 2 - 1;
-            offsetTimer = 2.0f;
-        }
-
-        if(col.gameObject.tag.Equals("Object") || col.gameObject.tag.Equals("Water")){
-            movePoint.x = (float) (transform.position.x + Math.Sin(moveAngle += 0.1f * offset) * 5);
-            movePoint.y = (float) (transform.position.y + Math.Cos(moveAngle += 0.1f * offset) * 5);
-        }
-
-        offsetTimer -= Time.deltaTime;
     }
 
     // Updates rotation of equipped weapon
