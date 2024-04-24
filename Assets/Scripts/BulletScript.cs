@@ -49,7 +49,7 @@ public class BulletScript : MonoBehaviour
 
     }
 
-    void OnTriggerEnter2D(Collider2D col){
+    void OnTriggerStay2D(Collider2D col){
 
         // causing error when bullet hits but character is not active
         if(col.tag == "Character" && col.gameObject.activeSelf) {
@@ -57,7 +57,7 @@ public class BulletScript : MonoBehaviour
             Destroy(transform.root.gameObject);
         }
         else if(col.tag == "Object") Destroy(transform.root.gameObject);
-
+        
     }
 
 }
