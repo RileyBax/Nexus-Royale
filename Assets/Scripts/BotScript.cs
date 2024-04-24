@@ -24,6 +24,9 @@ public class BotScript : MonoBehaviour
     private Vector2 zone;
     private float wanderAngle;
     private float waitTimer;
+    public float stuckTimer  = 2.0f;
+    private Vector3 lastPos;
+    public bool isStuck = false;
 
     // Start is called before the first frame update
     void Start()
@@ -222,6 +225,20 @@ public class BotScript : MonoBehaviour
         //TODO: Add check for bot stuck, set timer then choose new position to walk to
         // fix bot jitter
         // check if point moving to is inside of wall collider
+
+        if(Vector3.Distance(transform.position, lastPos) <= 0.1f)stuckTimer -= Time.deltaTime;
+        else {
+            isStuck = true;
+            stuckTimer = 2.0f;
+            lastPos = transform.position;
+        }
+
+        if(stuckTimer <= 0.0f) {
+            isStuck = false;
+            movePoint = transform.position;
+            stuckTimer = 2.0f;
+        }
+
     }
 
     void FixedUpdate(){
