@@ -18,7 +18,14 @@ public class cameraScript : MonoBehaviour
     {
 
         // Follows player character
-        transform.position = new Vector3(player.transform.position.x, player.transform.position.y, -10);
+        if(player != null) transform.position = new Vector3(player.transform.position.x, player.transform.position.y, -10);
 
     }
+
+    void setPlayer(GameObject p){
+
+        player = p;
+
+    }
+
 }
