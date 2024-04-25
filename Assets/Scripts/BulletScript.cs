@@ -11,13 +11,13 @@ public class BulletScript : MonoBehaviour
     private GameObject weapon;
     private float timer;
     private int angle = 0;
-    private int damage = 30;
+    private int damage;
 
     // Start is called before the first frame update
     void Start(){
 
         rb = GetComponent<Rigidbody2D>();
-        timer = 5.0f;
+        timer = 3.0f;
 
         transform.position = weapon.transform.position + (weapon.transform.position - character.transform.position);
         
@@ -46,6 +46,7 @@ public class BulletScript : MonoBehaviour
         angle = bInit.angle;
         character = bInit.character;
         weapon = bInit.weapon;
+        damage = bInit.damage;
 
     }
 

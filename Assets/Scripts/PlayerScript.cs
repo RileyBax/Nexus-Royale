@@ -21,6 +21,9 @@ public class PlayerScript : MonoBehaviour
     private int selectedWeapon = 0;
     private int health = 100;
     private bool isEquipped;
+    private float damageTimer;
+    private Color baseColor = new Color(0.7f, 0.8f, 0.5f, 255);
+    private SpriteRenderer sr;
 
     // Start is called before the first frame update
     void Start()
@@ -29,6 +32,7 @@ public class PlayerScript : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         weaponPos = new Vector2();
         hud = GameObject.Find("HUD");
+        sr = GetComponent<SpriteRenderer>();
 
         for(int i = 0; i < inventoryUI.Length; i++) inventoryUI[i] = hud.transform.GetChild(0).GetChild(i).GetComponent<UnityEngine.UI.Image>();
 
@@ -73,6 +77,14 @@ public class PlayerScript : MonoBehaviour
             else inventoryUI[i].color = Color.blue;
 
         }
+
+        if(damageTimer > 0.0f) {
+
+            sr.color = baseColor - new Color(0, 1.5f * damageTimer, damageTimer);
+            damageTimer -= Time.deltaTime;
+
+        }
+        //else if(sr.color != baseColor && damageTimer <= 0.0f) sr.color = baseColor;
 
     }
 
@@ -144,6 +156,12 @@ public class PlayerScript : MonoBehaviour
 
         health -= damage;
         if(health <= 0) transform.gameObject.SetActive(false);
+
+        if(damage > 0){
+
+            damageTimer = 0.5f;
+
+        }
 
     }
 

@@ -13,6 +13,7 @@ public class GameManagerScript : MonoBehaviour
     [SerializeField] private List<GameObject> weaponList;
     private int spawnTemp;
     private Collider2D[] nearObject;
+    // draw circle for zone
 
     // Start is called before the first frame update
     void Start()

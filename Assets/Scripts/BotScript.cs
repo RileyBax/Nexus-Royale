@@ -24,8 +24,11 @@ public class BotScript : MonoBehaviour
     private Vector2 zone;
     private float wanderAngle;
     private float waitTimer;
-    public float offsetTimer = 2.0f;
+    private float offsetTimer = 2.0f;
     private int offset;
+    private float damageTimer;
+    private SpriteRenderer sr;
+    private Color baseColor = new Color(1.0f, 0.823f, 0.506f, 255);
 
     // Start is called before the first frame update
     void Start()
@@ -33,6 +36,8 @@ public class BotScript : MonoBehaviour
         
         // have game manager set zone center position
         zone = new Vector2(0, 0);
+
+        sr = transform.gameObject.GetComponent<SpriteRenderer>();
 
     }
 
@@ -225,6 +230,13 @@ public class BotScript : MonoBehaviour
         //TODO: Add check for bot stuck, set timer then choose new position to walk to
         // fix bot jitter
         // check if point moving to is inside of wall collider
+   
+        if(damageTimer > 0.0f) {
+
+            sr.color = baseColor - new Color(0, 2 * damageTimer, 2 * damageTimer);
+            damageTimer -= Time.deltaTime;
+
+        }
 
     }
 
@@ -317,6 +329,12 @@ public class BotScript : MonoBehaviour
 
             }
             
+        }
+
+        if(damage > 0){
+
+            damageTimer = 0.5f;
+
         }
 
     }

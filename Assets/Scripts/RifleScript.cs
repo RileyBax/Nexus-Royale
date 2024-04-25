@@ -9,6 +9,7 @@ public class RifleScript : MonoBehaviour
     private float fireRate = 0.0f;
     private bool isEquipped = false;
     GameObject character;
+    private int damage = 34;
 
     // Start is called before the first frame update
     void Start()
@@ -30,7 +31,7 @@ public class RifleScript : MonoBehaviour
 
             fireRate = 1.0f;
 
-            Instantiate(bullet).SendMessage("init", new BulletInit(0, character, this.gameObject));
+            Instantiate(bullet).SendMessage("init", new BulletInit(0, character, this.gameObject, damage));
 
         }
 
