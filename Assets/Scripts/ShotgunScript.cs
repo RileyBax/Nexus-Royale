@@ -58,7 +58,7 @@ public class ShotgunScript : MonoBehaviour
 
     void getEquipped(GameObject bot){
 
-        bot.SendMessage("setIsEquipped", isEquipped);
+        if(bot.activeSelf) bot.SendMessage("setIsEquipped", isEquipped);
 
     }
 

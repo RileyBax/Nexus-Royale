@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
@@ -13,7 +14,14 @@ public class GameManagerScript : MonoBehaviour
     [SerializeField] private List<GameObject> weaponList;
     private int spawnTemp;
     private Collider2D[] nearObject;
-    // draw circle for zone
+    [SerializeField] private LineRenderer lr;
+    [SerializeField] private PolygonCollider2D zoneCollider;
+    private int circlePoints = 60;
+    private float radius = 80;
+    private Vector3 circlePointPos;
+    private Vector3 zone;
+    private float width = 0.25f;
+    private Vector2[] colliderPoints;
 
     // Start is called before the first frame update
     void Start()
@@ -51,12 +59,38 @@ public class GameManagerScript : MonoBehaviour
 
         }
         
+        lr.positionCount = circlePoints;
+        lr.startWidth = width;
+        lr.endWidth = width;
+
+        zone = new Vector3(0, 0, 0); // choose random position
+
+        colliderPoints = new Vector2[circlePoints];
+
+        transform.position = zone;
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
+        for(int i = 0; i < circlePoints; i++){
+
+            circlePointPos.x = (float)(zone.x + Math.Sin((2 * Math.PI) / circlePoints * i + 1) * radius);
+            circlePointPos.y = (float)(zone.y + Math.Cos((2 * Math.PI) / circlePoints * i + 1) * radius);
+            //circlePointPos.z = -10;
+
+            lr.SetPosition(i, circlePointPos);
+
+            colliderPoints[i] = new Vector2(circlePointPos.x, circlePointPos.y);
+
+        }
+
+        zoneCollider.SetPath(0, colliderPoints);
+
+        if(radius >= 10) radius -= Time.deltaTime;
+
     }
 
     void spawnCharacter(GameObject prefab){

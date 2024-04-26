@@ -24,6 +24,8 @@ public class PlayerScript : MonoBehaviour
     private float damageTimer;
     private Color baseColor = new Color(0.7f, 0.8f, 0.5f, 255);
     private SpriteRenderer sr;
+    public float zoneDamageTimer = 2.0f;
+    public bool insideZone = true;
 
     // Start is called before the first frame update
     void Start()
@@ -84,7 +86,14 @@ public class PlayerScript : MonoBehaviour
             damageTimer -= Time.deltaTime;
 
         }
-        //else if(sr.color != baseColor && damageTimer <= 0.0f) sr.color = baseColor;
+
+        if(!insideZone && zoneDamageTimer <= 0.0f){
+
+            zoneDamageTimer = 2.0f;
+            updateHealth(10);
+
+        }
+        else if(!insideZone && zoneDamageTimer > 0.0f) zoneDamageTimer -= Time.deltaTime;
 
     }
 
@@ -100,7 +109,7 @@ public class PlayerScript : MonoBehaviour
     // Handles collisions and weapon equip
     void OnTriggerStay2D(Collider2D col){
 
-        if(col.tag == "Weapon"){
+        if(col.tag.Equals("Weapon")){
 
             col.gameObject.SendMessage("getEquipped", transform.gameObject);
 
@@ -124,6 +133,18 @@ public class PlayerScript : MonoBehaviour
             }
 
         }
+
+    }
+
+    void OnTriggerExit2D(Collider2D col){
+
+        if(col.tag.Equals("Game Manager")) insideZone = false;
+
+    }
+
+    void OnTriggerEnter2D(Collider2D col){
+
+        if(col.tag.Equals("Game Manager")) insideZone = true;
 
     }
 

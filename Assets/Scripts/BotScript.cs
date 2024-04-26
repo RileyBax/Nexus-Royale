@@ -29,6 +29,8 @@ public class BotScript : MonoBehaviour
     private float damageTimer;
     private SpriteRenderer sr;
     private Color baseColor = new Color(1.0f, 0.823f, 0.506f, 255);
+    private float zoneDamageTimer = 2.0f;
+    private bool insideZone = true;
 
     // Start is called before the first frame update
     void Start()
@@ -238,6 +240,14 @@ public class BotScript : MonoBehaviour
 
         }
 
+        if(!insideZone && zoneDamageTimer <= 0.0f){
+
+            zoneDamageTimer = 2.0f;
+            updateHealth(10);
+
+        }
+        else if(!insideZone && zoneDamageTimer > 0.0f) zoneDamageTimer -= Time.deltaTime;
+
     }
 
     void FixedUpdate(){
@@ -275,6 +285,14 @@ public class BotScript : MonoBehaviour
             }
 
         }
+
+        if(col.tag.Equals("Game Manager")) insideZone = true;
+
+    }
+
+    void OnTriggerExit2D(Collider2D col){
+
+        if(col.tag.Equals("Game Manager")) insideZone = false;
 
     }
 
