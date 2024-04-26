@@ -1,6 +1,4 @@
 using System;
-using System.Threading;
-using TreeEditor;
 using UnityEngine;
 
 public class BotScript : MonoBehaviour
@@ -11,7 +9,7 @@ public class BotScript : MonoBehaviour
     private Vector2 weaponPos;
     private float angle = 0;
     private bool weaponNearEquipped;
-    private float weaponNearAngle;
+    private float destAngle;
     private float moveAngle;
     [SerializeField] Rigidbody2D rb;
     private Vector3 movePoint;
@@ -31,13 +29,12 @@ public class BotScript : MonoBehaviour
     private Color baseColor = new Color(1.0f, 0.823f, 0.506f, 255);
     private float zoneDamageTimer = 2.0f;
     private bool insideZone = true;
+    private float healTimer;
+    private Vector3 dest;
 
     // Start is called before the first frame update
     void Start()
     {
-        
-        // have game manager set zone center position
-        zone = new Vector2(0, 0);
 
         sr = transform.gameObject.GetComponent<SpriteRenderer>();
 
@@ -75,14 +72,14 @@ public class BotScript : MonoBehaviour
 
                 directionTimer = (float) rand.NextDouble();
 
-                weaponNearAngle = -(float) Math.Atan2(transform.position.x - weaponNear.transform.position.x + 0.5f, transform.position.y - weaponNear.transform.position.y) + 3.14f;
+                destAngle = -(float) Math.Atan2(transform.position.x - weaponNear.transform.position.x + 0.5f, transform.position.y - weaponNear.transform.position.y) + 3.14f;
 
                 movePoint = new Vector3();
                 float tempMoveAngle = 10.0f;
 
                 for(int i = 0; i < 8; i++){
 
-                    if(Math.Abs(weaponNearAngle - i * 0.785f) < Math.Abs(weaponNearAngle - tempMoveAngle)) tempMoveAngle = i * 0.785f;
+                    if(Math.Abs(destAngle - i * 0.785f) < Math.Abs(destAngle - tempMoveAngle)) tempMoveAngle = i * 0.785f;
 
                 }
 
@@ -153,16 +150,32 @@ public class BotScript : MonoBehaviour
 
                 }
 
+                if(health < 100 && target == null){
+
+                    hitColliders = Physics2D.OverlapCircleAll(transform.position, 10);
+
+                    for(int i = 0; i < hitColliders.Length; i++){
+
+                        if(hitColliders[i].tag.Equals("Health")) dest = hitColliders[i].gameObject.transform.position;
+
+                    }
+
+                }
+
+                if(dest != Vector3.zero) {
+                    moveTo(dest);
+                    directionTimer -= Time.deltaTime;
+                }
+
                 if(target != null) state = 2;
 
             }
 
             // If target not found, wander towards center of zone
-            if(target == null && Vector3.Distance(movePoint, transform.position) < 0.1f && waitTimer <= 0.0f){
+            if(target == null && Vector3.Distance(movePoint, transform.position) < 0.1f || waitTimer <= 0.0f){
 
                 // change this to pick one of 8 45 deg angles to walk in
                 // -------------------------------------------------------------------------------
-
                 wanderAngle = -(float) Math.Atan2(rand.Next((int)(transform.position.x - zone.x - 10), (int)(transform.position.x - zone.x + 10)), 
                 rand.Next((int)(transform.position.y - zone.y - 10), (int)(transform.position.y - zone.y + 10))) + 3.14f;
                 movePoint = new Vector3();
@@ -240,6 +253,13 @@ public class BotScript : MonoBehaviour
 
         }
 
+        if(healTimer > 0.0f){
+
+            sr.color = baseColor - new Color(healTimer, 0, healTimer);
+            healTimer -= Time.deltaTime;
+
+        }
+
         if(!insideZone && zoneDamageTimer <= 0.0f){
 
             zoneDamageTimer = 2.0f;
@@ -287,6 +307,13 @@ public class BotScript : MonoBehaviour
         }
 
         if(col.tag.Equals("Game Manager")) insideZone = true;
+
+        if(col.tag.Equals("Health") && health < 100) {
+
+            updateHealth(-(Math.Min(100 - health, 50)));
+            Destroy(col.gameObject);
+            
+        }
 
     }
 
@@ -349,10 +376,10 @@ public class BotScript : MonoBehaviour
             
         }
 
-        if(damage > 0){
-
-            damageTimer = 0.5f;
-
+        if(damage > 0) damageTimer = 0.5f;
+        else {
+            dest = Vector3.zero;
+            healTimer = 0.5f;
         }
 
     }
@@ -366,6 +393,38 @@ public class BotScript : MonoBehaviour
             weaponNear = null;
 
         }
+
+    }
+
+    void moveTo(Vector3 destination){
+        
+        if(directionTimer <= 0.0f){
+
+            directionTimer = (float) rand.NextDouble();
+
+            destAngle = -(float) Math.Atan2(transform.position.x - destination.x + 0.5f, transform.position.y - destination.y) + 3.14f;
+
+            movePoint = new Vector3();
+            float tempMoveAngle = 10.0f;
+
+            for(int i = 0; i < 8; i++){
+
+                if(Math.Abs(destAngle - i * 0.785f) < Math.Abs(destAngle - tempMoveAngle)) tempMoveAngle = i * 0.785f;
+
+            }
+
+            moveAngle = -tempMoveAngle;
+
+            movePoint.x = (float) (transform.position.x + Math.Sin(moveAngle) * 5);
+            movePoint.y = (float) (transform.position.y + Math.Cos(moveAngle) * 5);
+            
+        }
+
+    }
+
+    void setZone(Vector3 z){
+
+        zone = (Vector2) z;
 
     }
 

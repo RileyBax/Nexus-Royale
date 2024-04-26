@@ -10,6 +10,7 @@ TagManager:
   - Object
   - Water
   - Game Manager
+  - Health
   layers:
   - Default
   - TransparentFX

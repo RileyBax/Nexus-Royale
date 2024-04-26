@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.UI;
@@ -26,6 +27,7 @@ public class PlayerScript : MonoBehaviour
     private SpriteRenderer sr;
     public float zoneDamageTimer = 2.0f;
     public bool insideZone = true;
+    private float healTimer;
 
     // Start is called before the first frame update
     void Start()
@@ -87,6 +89,13 @@ public class PlayerScript : MonoBehaviour
 
         }
 
+        if(healTimer > 0.0f){
+
+            sr.color = baseColor - new Color(healTimer, 0, healTimer);
+            healTimer -= Time.deltaTime;
+
+        }
+
         if(!insideZone && zoneDamageTimer <= 0.0f){
 
             zoneDamageTimer = 2.0f;
@@ -128,7 +137,6 @@ public class PlayerScript : MonoBehaviour
                 inventory[selectedWeapon] = col.gameObject;
                 col.gameObject.SendMessage("setEquipped", true);
                 col.gameObject.SendMessage("setCharacter", transform.gameObject);
-                // can change above to remove equipped boolean but dont want to
 
             }
 
@@ -145,6 +153,13 @@ public class PlayerScript : MonoBehaviour
     void OnTriggerEnter2D(Collider2D col){
 
         if(col.tag.Equals("Game Manager")) insideZone = true;
+        
+        if(col.tag.Equals("Health") && health < 100) {
+
+            updateHealth(-(Math.Min(100 - health, 50)));
+            Destroy(col.gameObject);
+            
+        }
 
     }
 
@@ -178,11 +193,8 @@ public class PlayerScript : MonoBehaviour
         health -= damage;
         if(health <= 0) transform.gameObject.SetActive(false);
 
-        if(damage > 0){
-
-            damageTimer = 0.5f;
-
-        }
+        if(damage > 0) damageTimer = 0.5f;
+        else healTimer = 0.5f;
 
     }
 
@@ -191,5 +203,8 @@ public class PlayerScript : MonoBehaviour
         isEquipped = e;
 
     }
+
+    // To stop gamemanager throwing not found exception
+    void setZone(){}
 
 }
