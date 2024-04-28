@@ -1228,6 +1228,7 @@ GameObject:
   - component: {fileID: 1477311266}
   - component: {fileID: 1477311265}
   - component: {fileID: 1477311264}
+  - component: {fileID: 1477311267}
   m_Layer: 5
   m_Name: JoinServer
   m_TagString: Untagged
@@ -1298,7 +1299,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1477311265}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1535773111}
+        m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
+        m_MethodName: JoinGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1477311265
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1337,6 +1350,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1477311262}
   m_CullTransparentMesh: 1
+--- !u!114 &1477311267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1477311262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa16b7a093d83124bb6c63c8db481706, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1483992539
 GameObject:
   m_ObjectHideFlags: 0
@@ -1495,6 +1520,7 @@ GameObject:
   - component: {fileID: 1535773108}
   - component: {fileID: 1535773107}
   - component: {fileID: 1535773110}
+  - component: {fileID: 1535773111}
   m_Layer: 5
   m_Name: MainMenu
   m_TagString: Untagged
@@ -1600,6 +1626,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76b97cae03df25a468053abb5067e54b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1535773111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1535773105}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d981052dd8cd884418193e29a433e250, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _runnerPrefab: {fileID: -2991753472649034641, guid: 9f2c6306d5e58214fba4d42c51c884a7, type: 3}
 --- !u!1 &1551202218
 GameObject:
   m_ObjectHideFlags: 0
@@ -2289,7 +2328,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1849164757}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1535773111}
+        m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
+        m_MethodName: HostGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1849164757
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,6 +1,4 @@
 using System;
-using System.Threading;
-using TreeEditor;
 using UnityEngine;
 
 public class BotScript : MonoBehaviour
