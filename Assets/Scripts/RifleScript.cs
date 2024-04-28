@@ -70,4 +70,10 @@ public class RifleScript : MonoBehaviour
 
     }
 
+    void addAmmo(int amount){
+
+        ammo += amount;
+
+    }
+
 }

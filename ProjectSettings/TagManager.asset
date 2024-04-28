@@ -11,6 +11,7 @@ TagManager:
   - Water
   - Game Manager
   - Health
+  - Ammo
   layers:
   - Default
   - TransparentFX

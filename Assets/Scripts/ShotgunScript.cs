@@ -70,4 +70,10 @@ public class ShotgunScript : MonoBehaviour
 
     }
 
+    void addAmmo(int amount){
+
+        ammo += amount;
+
+    }
+
 }

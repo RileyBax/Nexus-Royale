@@ -68,4 +68,10 @@ public class SMGScript : MonoBehaviour
 
     }
 
+    void addAmmo(int amount){
+
+        ammo += amount;
+
+    }
+
 }

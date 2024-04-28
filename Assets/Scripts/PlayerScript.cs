@@ -26,8 +26,8 @@ public class PlayerScript : MonoBehaviour
     private float damageTimer;
     private Color baseColor = new Color(0.7f, 0.8f, 0.5f, 255);
     private SpriteRenderer sr;
-    public float zoneDamageTimer = 2.0f;
-    public bool insideZone = true;
+    private float zoneDamageTimer = 2.0f;
+    private bool insideZone = true;
     private float healTimer;
     private TextMeshProUGUI ammoText;
 
@@ -166,6 +166,14 @@ public class PlayerScript : MonoBehaviour
             updateHealth(-(Math.Min(100 - health, 50)));
             Destroy(col.gameObject);
             
+        }
+
+        if(col.tag.Equals("Ammo") && inventory[selectedWeapon] != null) {
+
+            inventory[selectedWeapon].SendMessage("addAmmo", 10);
+            updateAmmo();
+            Destroy(col.gameObject);
+
         }
 
     }
