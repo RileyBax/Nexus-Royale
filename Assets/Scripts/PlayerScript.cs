@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using TMPro;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEditor;
@@ -18,7 +19,7 @@ public class PlayerScript : MonoBehaviour
     private float angle;
     private UnityEngine.UI.Image[] inventoryUI = new UnityEngine.UI.Image[3];
     private GameObject[] inventory = new GameObject[3];
-    [SerializeField] private GameObject hud;
+    private GameObject hud;
     private int selectedWeapon = 0;
     private int health = 100;
     private bool isEquipped;
@@ -28,6 +29,7 @@ public class PlayerScript : MonoBehaviour
     public float zoneDamageTimer = 2.0f;
     public bool insideZone = true;
     private float healTimer;
+    private TextMeshProUGUI ammoText;
 
     // Start is called before the first frame update
     void Start()
@@ -36,6 +38,7 @@ public class PlayerScript : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         weaponPos = new Vector2();
         hud = GameObject.Find("HUD");
+        ammoText = hud.transform.Find("Inventory").transform.Find("Ammo").GetComponent<TextMeshProUGUI>();
         sr = GetComponent<SpriteRenderer>();
 
         for(int i = 0; i < inventoryUI.Length; i++) inventoryUI[i] = hud.transform.GetChild(0).GetChild(i).GetComponent<UnityEngine.UI.Image>();
@@ -61,7 +64,10 @@ public class PlayerScript : MonoBehaviour
             weapon.transform.position = weaponPos;
             weapon.transform.up = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y);
 
-            if(Input.GetMouseButton(0)) weapon.SendMessage("FireWeapon");
+            if(Input.GetMouseButton(0)) {
+                weapon.SendMessage("FireWeapon");
+                updateAmmo();
+            }
 
         }
 
@@ -137,6 +143,7 @@ public class PlayerScript : MonoBehaviour
                 inventory[selectedWeapon] = col.gameObject;
                 col.gameObject.SendMessage("setEquipped", true);
                 col.gameObject.SendMessage("setCharacter", transform.gameObject);
+                updateAmmo();
 
             }
 
@@ -181,6 +188,7 @@ public class PlayerScript : MonoBehaviour
 
             weapon = inventory[selectedWeapon];
             weapon.gameObject.SetActive(true);
+            updateAmmo();
 
         }
         else weapon = null;
@@ -206,5 +214,17 @@ public class PlayerScript : MonoBehaviour
 
     // To stop gamemanager throwing not found exception
     void setZone(){}
+
+    void updateAmmo(){
+
+        inventory[selectedWeapon].SendMessage("getAmmo");
+
+    }
+
+    void setAmmo(string ammo){
+
+        ammoText.text = ammo;
+
+    }
 
 }

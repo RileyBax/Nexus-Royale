@@ -144,9 +144,9 @@ public class BotScript : MonoBehaviour
 
                 for(int i = 0; i < hitColliders.Length; i++){
 
-                    if(target == null && hitColliders[i].tag.Equals("Character") && hitColliders[i].gameObject != transform.gameObject) target = hitColliders[i].gameObject;
+                    if(target == null && isCharacter(hitColliders[i]) && hitColliders[i].gameObject != transform.gameObject) target = hitColliders[i].gameObject;
                     else if(target != null && Vector3.Distance(target.transform.position, transform.position) > Vector3.Distance(transform.position, hitColliders[i].gameObject.transform.position)
-                    && hitColliders[i].tag.Equals("Character") && hitColliders[i].gameObject != transform.gameObject) target = hitColliders[i].gameObject;
+                    && isCharacter(hitColliders[i]) && hitColliders[i].gameObject != transform.gameObject) target = hitColliders[i].gameObject;
 
                 }
 
@@ -425,6 +425,14 @@ public class BotScript : MonoBehaviour
     void setZone(Vector3 z){
 
         zone = (Vector2) z;
+
+    }
+
+    bool isCharacter(Collider2D col){
+
+        if(col.tag.Equals("Character") || col.tag.Equals("Player")) return true;
+
+        return false;
 
     }
 

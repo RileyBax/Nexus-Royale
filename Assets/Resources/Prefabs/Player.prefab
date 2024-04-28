@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 8674633741554436975}
   m_Layer: 3
   m_Name: Player
-  m_TagString: Character
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -99,7 +99,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9becb9f3244f5de43b77b5ddcb886624, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hud: {fileID: 0}
+  zoneDamageTimer: 2
+  insideZone: 1
 --- !u!50 &6057269810632468292
 Rigidbody2D:
   serializedVersion: 4

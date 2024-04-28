@@ -53,12 +53,20 @@ public class BulletScript : MonoBehaviour
     void OnTriggerStay2D(Collider2D col){
 
         // causing error when bullet hits but character is not active
-        if(col.tag == "Character" && col.gameObject.activeSelf) {
+        if(isCharacter(col) && col.gameObject.activeSelf) {
             col.SendMessage("updateHealth", damage);
             Destroy(transform.root.gameObject);
         }
         else if(col.tag == "Object") Destroy(transform.root.gameObject);
         
+    }
+
+    bool isCharacter(Collider2D col){
+
+        if(col.tag.Equals("Character") || col.tag.Equals("Player")) return true;
+
+        return false;
+
     }
 
 }
