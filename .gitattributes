@@ -51,3 +51,4 @@
 *.meta linguist-generated
 *.prefab linguist-generated
 *.unity linguist-generated
+Main[[:space:]]Scene.unity filter=lfs diff=lfs merge=lfs -text
