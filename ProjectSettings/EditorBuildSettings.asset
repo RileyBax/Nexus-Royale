@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 2cda990e2423bbf4892e6590ba056729
+    path: Assets/Scenes/Nexus Royale.unity
+    guid: 213751765f9fc024bbd5d434bfc8a664
+  - enabled: 1
+    path: Assets/Scenes/Main Scene.unity
+    guid: a8e06d3e9b92e43478cfba52a9081357
   m_configObjects: {}

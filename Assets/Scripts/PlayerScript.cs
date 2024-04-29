@@ -1,25 +1,18 @@
+using Fusion;
 using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using TMPro;
-using Unity.Mathematics;
-using Unity.VisualScripting;
-using UnityEditor;
-using UnityEditor.UI;
 using UnityEngine;
-using UnityEngine.UIElements;
 
-public class PlayerScript : MonoBehaviour
+public class PlayerScript : NetworkBehaviour
 {
-
-    private Rigidbody2D rb;
     private GameObject weapon;
     private Vector2 weaponPos;
     private Vector3 mousePos;
     private float angle;
     private UnityEngine.UI.Image[] inventoryUI = new UnityEngine.UI.Image[3];
     private GameObject[] inventory = new GameObject[3];
-    private GameObject hud;
+    [SerializeField] private GameObject hud;
+    // Camera target (the main camera) reference
+    [SerializeField] private Transform camTarget;
     private int selectedWeapon = 0;
     private int health = 100;
     private bool isEquipped;
@@ -31,19 +24,21 @@ public class PlayerScript : MonoBehaviour
     private float healTimer;
     private TextMeshProUGUI ammoText;
 
+    // Is the player ready to play
+    private bool isReady;
+
+    private NetworkCharacterController _characterController;
+
     // Start is called before the first frame update
     void Start()
     {
 
-        rb = GetComponent<Rigidbody2D>();
         weaponPos = new Vector2();
         hud = GameObject.Find("HUD");
         ammoText = hud.transform.Find("Inventory").transform.Find("Ammo").GetComponent<TextMeshProUGUI>();
         sr = GetComponent<SpriteRenderer>();
 
         for(int i = 0; i < inventoryUI.Length; i++) inventoryUI[i] = hud.transform.GetChild(0).GetChild(i).GetComponent<UnityEngine.UI.Image>();
-
-        GameObject.Find("Main Camera").SendMessage("setPlayer", this.gameObject);
 
     }
 
@@ -112,15 +107,27 @@ public class PlayerScript : MonoBehaviour
 
     }
 
-    void FixedUpdate()
+    public override void Spawned()
     {
-        
-        // Moves player in input direction
-
-        rb.MovePosition(rb.position + new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized * Time.deltaTime * 5);
-
+        if (HasInputAuthority)
+        {
+            CameraFollower.Singleton.SetTarget(camTarget);
+        }
     }
-    
+
+    private void Awake()
+    {
+        _characterController = GetComponent<NetworkCharacterController>();
+    }
+
+    public override void FixedUpdateNetwork()
+    {
+        if (GetInput(out NetInput data))
+        {
+            _characterController.transform.position += data.Position * Time.deltaTime * 50;
+        }
+    }
+
     // Handles collisions and weapon equip
     void OnTriggerStay2D(Collider2D col){
 
