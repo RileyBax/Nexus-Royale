@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using TMPro;
+using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.UI;
@@ -17,10 +19,17 @@ public class PlayerScript : MonoBehaviour
     private float angle;
     private UnityEngine.UI.Image[] inventoryUI = new UnityEngine.UI.Image[3];
     private GameObject[] inventory = new GameObject[3];
-    [SerializeField] private GameObject hud;
+    private GameObject hud;
     private int selectedWeapon = 0;
     private int health = 100;
     private bool isEquipped;
+    private float damageTimer;
+    private Color baseColor = new Color(0.7f, 0.8f, 0.5f, 255);
+    private SpriteRenderer sr;
+    private float zoneDamageTimer = 2.0f;
+    private bool insideZone = true;
+    private float healTimer;
+    private TextMeshProUGUI ammoText;
 
     // Start is called before the first frame update
     void Start()
@@ -29,6 +38,8 @@ public class PlayerScript : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         weaponPos = new Vector2();
         hud = GameObject.Find("HUD");
+        ammoText = hud.transform.Find("Inventory").transform.Find("Ammo").GetComponent<TextMeshProUGUI>();
+        sr = GetComponent<SpriteRenderer>();
 
         for(int i = 0; i < inventoryUI.Length; i++) inventoryUI[i] = hud.transform.GetChild(0).GetChild(i).GetComponent<UnityEngine.UI.Image>();
 
@@ -53,7 +64,10 @@ public class PlayerScript : MonoBehaviour
             weapon.transform.position = weaponPos;
             weapon.transform.up = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y);
 
-            if(Input.GetMouseButton(0)) weapon.SendMessage("FireWeapon");
+            if(Input.GetMouseButton(0)) {
+                weapon.SendMessage("FireWeapon");
+                updateAmmo();
+            }
 
         }
 
@@ -74,6 +88,28 @@ public class PlayerScript : MonoBehaviour
 
         }
 
+        if(damageTimer > 0.0f) {
+
+            sr.color = baseColor - new Color(0, 1.5f * damageTimer, damageTimer);
+            damageTimer -= Time.deltaTime;
+
+        }
+
+        if(healTimer > 0.0f){
+
+            sr.color = baseColor - new Color(healTimer, 0, healTimer);
+            healTimer -= Time.deltaTime;
+
+        }
+
+        if(!insideZone && zoneDamageTimer <= 0.0f){
+
+            zoneDamageTimer = 2.0f;
+            updateHealth(10);
+
+        }
+        else if(!insideZone && zoneDamageTimer > 0.0f) zoneDamageTimer -= Time.deltaTime;
+
     }
 
     void FixedUpdate()
@@ -88,7 +124,7 @@ public class PlayerScript : MonoBehaviour
     // Handles collisions and weapon equip
     void OnTriggerStay2D(Collider2D col){
 
-        if(col.tag == "Weapon"){
+        if(col.tag.Equals("Weapon")){
 
             col.gameObject.SendMessage("getEquipped", transform.gameObject);
 
@@ -107,9 +143,36 @@ public class PlayerScript : MonoBehaviour
                 inventory[selectedWeapon] = col.gameObject;
                 col.gameObject.SendMessage("setEquipped", true);
                 col.gameObject.SendMessage("setCharacter", transform.gameObject);
-                // can change above to remove equipped boolean but dont want to
+                updateAmmo();
 
             }
+
+        }
+
+    }
+
+    void OnTriggerExit2D(Collider2D col){
+
+        if(col.tag.Equals("Game Manager")) insideZone = false;
+
+    }
+
+    void OnTriggerEnter2D(Collider2D col){
+
+        if(col.tag.Equals("Game Manager")) insideZone = true;
+        
+        if(col.tag.Equals("Health") && health < 100) {
+
+            updateHealth(-(Math.Min(100 - health, 50)));
+            Destroy(col.gameObject);
+            
+        }
+
+        if(col.tag.Equals("Ammo") && inventory[selectedWeapon] != null) {
+
+            inventory[selectedWeapon].SendMessage("addAmmo", 10);
+            updateAmmo();
+            Destroy(col.gameObject);
 
         }
 
@@ -133,6 +196,7 @@ public class PlayerScript : MonoBehaviour
 
             weapon = inventory[selectedWeapon];
             weapon.gameObject.SetActive(true);
+            updateAmmo();
 
         }
         else weapon = null;
@@ -145,11 +209,29 @@ public class PlayerScript : MonoBehaviour
         health -= damage;
         if(health <= 0) transform.gameObject.SetActive(false);
 
+        if(damage > 0) damageTimer = 0.5f;
+        else healTimer = 0.5f;
+
     }
 
     void setIsEquipped(bool e){
 
         isEquipped = e;
+
+    }
+
+    // To stop gamemanager throwing not found exception
+    void setZone(){}
+
+    void updateAmmo(){
+
+        inventory[selectedWeapon].SendMessage("getAmmo");
+
+    }
+
+    void setAmmo(string ammo){
+
+        ammoText.text = ammo;
 
     }
 
