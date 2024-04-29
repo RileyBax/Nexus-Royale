@@ -8,6 +8,10 @@ TagManager:
   - Bullet
   - Character
   - Object
+  - Water
+  - Game Manager
+  - Health
+  - Ammo
   layers:
   - Default
   - TransparentFX
