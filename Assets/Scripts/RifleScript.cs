@@ -1,5 +1,5 @@
-using System;
-using TMPro;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class RifleScript : MonoBehaviour
@@ -9,8 +9,6 @@ public class RifleScript : MonoBehaviour
     private float fireRate = 0.0f;
     private bool isEquipped = false;
     GameObject character;
-    private int damage = 50;
-    private int ammo = 10;
 
     // Start is called before the first frame update
     void Start()
@@ -28,13 +26,11 @@ public class RifleScript : MonoBehaviour
 
     void FireWeapon(){
 
-        if(fireRate <= 0.0f && ammo > 0){
+        if(fireRate <= 0.0f){
 
             fireRate = 1.0f;
 
-            Instantiate(bullet).SendMessage("init", new BulletInit(0, character, this.gameObject, damage));
-
-            if(character.tag.Equals("Player")) ammo--;
+            Instantiate(bullet).SendMessage("init", new BulletInit(0, character, this.gameObject));
 
         }
 
@@ -61,18 +57,6 @@ public class RifleScript : MonoBehaviour
     void getEquipped(GameObject bot){
 
         if(bot.activeSelf) bot.SendMessage("setIsEquipped", isEquipped);
-
-    }
-
-    void getAmmo(){
-
-        character.SendMessage("setAmmo", ammo.ToString());
-
-    }
-
-    void addAmmo(int amount){
-
-        ammo += amount;
 
     }
 

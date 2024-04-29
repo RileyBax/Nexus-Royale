@@ -47,7 +47,7 @@ GameObject:
   - component: {fileID: -4064815672327556890}
   m_Layer: 3
   m_Name: Player
-  m_TagString: Player
+  m_TagString: Character
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -64,7 +64,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: [{fileID: 3589147229896252828}]
+  m_Children:
+  - {fileID: 3589147229896252828}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7749910632487039352
@@ -108,9 +109,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 590946169debde844ad353c0162a0741,
-    type: 3}
-  m_Color: {r: 0.7, g: 0.8, b: 0.5, a: 1}
+  m_Sprite: {fileID: 7482667652216324306, guid: 590946169debde844ad353c0162a0741, type: 3}
+  m_Color: {r: 0.17735851, g: 0.14155217, b: 0.14155217, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -132,8 +132,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9becb9f3244f5de43b77b5ddcb886624, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  zoneDamageTimer: 2
-  insideZone: 1
+  hud: {fileID: 0}
   camTarget: {fileID: 3589147229896252828}
 --- !u!114 &4843822125772668117
 MonoBehaviour:

@@ -11,13 +11,13 @@ public class BulletScript : MonoBehaviour
     private GameObject weapon;
     private float timer;
     private int angle = 0;
-    private int damage;
+    private int damage = 30;
 
     // Start is called before the first frame update
     void Start(){
 
         rb = GetComponent<Rigidbody2D>();
-        timer = 3.0f;
+        timer = 5.0f;
 
         transform.position = weapon.transform.position + (weapon.transform.position - character.transform.position);
         
@@ -46,27 +46,18 @@ public class BulletScript : MonoBehaviour
         angle = bInit.angle;
         character = bInit.character;
         weapon = bInit.weapon;
-        damage = bInit.damage;
 
     }
 
     void OnTriggerStay2D(Collider2D col){
 
         // causing error when bullet hits but character is not active
-        if(isCharacter(col) && col.gameObject.activeSelf) {
+        if(col.tag == "Character" && col.gameObject.activeSelf) {
             col.SendMessage("updateHealth", damage);
             Destroy(transform.root.gameObject);
         }
         else if(col.tag == "Object") Destroy(transform.root.gameObject);
         
-    }
-
-    bool isCharacter(Collider2D col){
-
-        if(col.tag.Equals("Character") || col.tag.Equals("Player")) return true;
-
-        return false;
-
     }
 
 }
