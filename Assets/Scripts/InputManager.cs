@@ -18,21 +18,12 @@ public class InputManager : SimulationBehaviour, IBeforeUpdate, INetworkRunnerCa
             accumulatedInput = default;
         }
 
-        Vector3 movement = Vector3.zero;
+        Vector2 movement = Vector2.zero;
 
-        if (Input.GetKey(KeyCode.W))
-            movement += Vector3.up;
+        movement.x = Input.GetAxisRaw("Horizontal");
+        movement.y = Input.GetAxisRaw("Vertical");
 
-        if (Input.GetKey(KeyCode.S))
-            movement += Vector3.down;
-
-        if (Input.GetKey(KeyCode.A))
-            movement += Vector3.left;
-
-        if (Input.GetKey(KeyCode.D))
-            movement += Vector3.right;
-
-        accumulatedInput.Position += movement;
+        accumulatedInput.Velocity += movement * 5;
     }
 
     public void OnConnectedToServer(NetworkRunner runner)
@@ -61,7 +52,7 @@ public class InputManager : SimulationBehaviour, IBeforeUpdate, INetworkRunnerCa
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
-        accumulatedInput.Position.Normalize();
+        accumulatedInput.Velocity.Normalize();
         input.Set(accumulatedInput);
         resetInput = true;
     }

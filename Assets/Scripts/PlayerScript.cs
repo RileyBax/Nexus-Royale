@@ -20,7 +20,7 @@ public class PlayerScript : NetworkBehaviour
     // Is the player ready to play
     private bool isReady;
 
-    private NetworkCharacterController _characterController;
+    private Rigidbody2D rigidBody;
 
     // Start is called before the first frame update
     void Start()
@@ -83,14 +83,14 @@ public class PlayerScript : NetworkBehaviour
 
     private void Awake()
     {
-        _characterController = GetComponent<NetworkCharacterController>();
+        rigidBody = GetComponent<Rigidbody2D>();
     }
 
     public override void FixedUpdateNetwork()
     {
         if (GetInput(out NetInput data))
         {
-            _characterController.transform.position += data.Position * Time.deltaTime * 50;
+            rigidBody.velocity = data.Velocity * 5;
         }
     }
 
