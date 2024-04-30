@@ -1,13 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using TMPro;
-using Unity.Mathematics;
-using Unity.VisualScripting;
-using UnityEditor;
-using UnityEditor.UI;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class PlayerScript : MonoBehaviour
 {
