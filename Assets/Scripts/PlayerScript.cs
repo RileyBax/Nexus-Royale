@@ -80,7 +80,7 @@ public class PlayerScript : NetworkBehaviour
         if (GetInput(out NetInput data))
         {
             rigidBody.velocity = data.Velocity * 5;
-            weapon.transform.position = rigidBody.position;
+            //weapon.transform.position = rigidBody.position;
         }
     }
 
