@@ -95,9 +95,10 @@ GameObject:
   - component: {fileID: 5812986733418282301}
   - component: {fileID: 7026550471086429414}
   - component: {fileID: 4519064668884183590}
-  - component: {fileID: 168175278249838793}
-  - component: {fileID: 3009200979298652763}
   - component: {fileID: -6364537225729374060}
+  - component: {fileID: 168175278249838793}
+  - component: {fileID: 6632830041224304924}
+  - component: {fileID: 3814171857513668822}
   m_Layer: 0
   m_Name: Rifle
   m_TagString: Weapon
@@ -186,6 +187,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bullet: {fileID: 6843712240695877828, guid: 53870f67e4611ac4b9ac1a8baba15002, type: 3}
+--- !u!114 &-6364537225729374060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6920630535900754021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 2582783668
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 4519064668884183590}
+  - {fileID: 3814171857513668822}
 --- !u!61 &168175278249838793
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -231,7 +251,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!50 &3009200979298652763
+--- !u!50 &6632830041224304924
 Rigidbody2D:
   serializedVersion: 4
   m_ObjectHideFlags: 0
@@ -246,7 +266,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 0
+  m_GravityScale: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -258,7 +278,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &-6364537225729374060
+--- !u!114 &3814171857513668822
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -267,11 +287,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 6920630535900754021}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Script: {fileID: 11500000, guid: c5e690b5fb1084f5ab1c86457af401d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SortKey: 2582783668
-  ObjectInterest: 1
-  Flags: 262145
-  NestedObjects: []
-  NetworkedBehaviours: []
+  SyncScale: 0
+  SyncParent: 1
+  _interpolationTarget: {fileID: 0}
+  UsePreciseRotation: 0
+  UseRenderSleepThresholds: 1
+  RenderThresholds:
+    UseEnergy: 1
+    Position: 0.01
+    Rotation: 0.01
+    Scale: 0.01

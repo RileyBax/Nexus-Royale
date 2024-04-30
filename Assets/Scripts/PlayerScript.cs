@@ -42,17 +42,6 @@ public class PlayerScript : NetworkBehaviour
         angle = -(float) Math.Atan2(mousePos.y - transform.position.y, mousePos.x - transform.position.x) + 1.55f;
 
         // Rotates weapon towards mouse
-        if(weapon != null){
-
-            weaponPos.x = (float) (transform.position.x + Math.Sin(angle) * 1);
-            weaponPos.y = (float) (transform.position.y + Math.Cos(angle) * 1);
-
-            weapon.transform.position = weaponPos;
-            weapon.transform.up = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y);
-
-            if(Input.GetMouseButton(0)) weapon.SendMessage("FireWeapon");
-
-        }
 
         // Inventory selection
         if(Input.anyKeyDown){
@@ -91,6 +80,7 @@ public class PlayerScript : NetworkBehaviour
         if (GetInput(out NetInput data))
         {
             rigidBody.velocity = data.Velocity * 5;
+            weapon.transform.position = rigidBody.position;
         }
     }
 

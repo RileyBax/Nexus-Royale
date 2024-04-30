@@ -5,6 +5,6 @@ using UnityEngine;
 
 public struct NetInput : INetworkInput
 {
-    public NetworkButtons Buttons;
+    public float WeaponAngle;
     public Vector2 Velocity;
 }
