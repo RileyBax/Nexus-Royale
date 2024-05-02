@@ -31,6 +31,21 @@ public class InputManager : SimulationBehaviour, IBeforeUpdate, INetworkRunnerCa
             accumulatedInput.PickupWeapon = true;
         }
 
+        accumulatedInput.WeaponChange = 0;
+
+        if (Input.GetKey(KeyCode.Alpha1))
+        {
+            accumulatedInput.WeaponChange = 1;
+        }
+        if (Input.GetKey(KeyCode.Alpha2))
+        {
+            accumulatedInput.WeaponChange = 2;
+        }
+        if (Input.GetKey(KeyCode.Alpha3))
+        {
+            accumulatedInput.WeaponChange = 3;
+        }
+
         accumulatedInput.MousePos = Input.mousePosition;
 
         if (CameraFollower.Singleton != null)

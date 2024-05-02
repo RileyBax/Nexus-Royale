@@ -35,28 +35,6 @@ public class PlayerScript : NetworkBehaviour
 
     }
 
-    // Update is called once per frame
-    void Update(){
-
-        // Inventory selection
-        if(Input.anyKeyDown){
-
-            Int32.TryParse(Input.inputString, out int inputNum);
-
-            if(inputNum >= 1 && inputNum <= 3) changeWeapon(inputNum - 1);
-
-        }
-
-        // Sets selected inventory slot colour
-        for(int i = 0; i < inventoryUI.Length; i++){
-            
-            if(i != selectedWeapon) inventoryUI[i].color = Color.grey;
-            else inventoryUI[i].color = Color.blue;
-
-        }
-
-    }
-
     public override void Spawned()
     {
         if (HasInputAuthority)
@@ -75,6 +53,19 @@ public class PlayerScript : NetworkBehaviour
         if (GetInput(out NetInput data))
         {
             rigidBody.velocity = data.Velocity * 5;
+
+            if (data.WeaponChange != 0)
+            {
+                changeWeapon(data.WeaponChange - 1);
+
+                for (int i = 0; i < inventoryUI.Length; i++)
+                {
+
+                    if (i != selectedWeapon) inventoryUI[i].color = Color.grey;
+                    else inventoryUI[i].color = Color.blue;
+
+                }
+            }
 
             if (data.PickupWeapon && !isEquipped && nearbyWeapons.Count > 0)
             {
