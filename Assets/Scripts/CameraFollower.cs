@@ -26,6 +26,11 @@ public class CameraFollower : MonoBehaviour
 
     private Transform target;
 
+    public Camera GetCamera()
+    {
+       return this.GetComponent<Camera>();
+    }
+
     private void Awake()
     {
         Singleton = this;

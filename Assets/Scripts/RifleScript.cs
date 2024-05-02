@@ -10,17 +10,25 @@ public class RifleScript : NetworkBehaviour
     private bool isEquipped = false;
     GameObject character;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-       // if(fireRate >= 0) fireRate -= Time.deltaTime;
+    private Rigidbody2D rigidBody;
 
+    private void Awake()
+    {
+        rigidBody = GetComponent<Rigidbody2D>();
     }
 
     public override void FixedUpdateNetwork()
     {
-        
+        //if (character != null & GetInput(out NetInput data))
+        //{
+        //Debug.Log(character);
+        //    float angle = data.WeaponAngle;
+
+        //    rigidBody.velocity = data.Velocity * 5;
+        //    rigidBody.rotation = angle;
+        //}
+
+        // if(fireRate >= 0) fireRate -= Time.deltaTime;
     }
 
     public void OnTriggerEnter2D(Collider2D collision)

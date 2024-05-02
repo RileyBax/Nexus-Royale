@@ -83,27 +83,26 @@ public class PlayerScript : NetworkBehaviour
         {
             rigidBody.velocity = data.Velocity * 5;
 
-            if (data.pickupWeapon && !isEquipped && nearbyWeapons.Count > 0)
+            if (data.PickupWeapon && !isEquipped && nearbyWeapons.Count > 0)
             {
                 PickupWeapon(nearbyWeapons[0]);
             }
 
             if (weapon != null)
             {
-            float angle = data.weaponAngle;
+                Rigidbody2D rb = weapon.GetComponent<Rigidbody2D>();
 
-            // Rotates weapon towards mouse
-            weaponPos.x = (float)(transform.position.x + Math.Sin(angle) * 1);
-            weaponPos.y = (float)(transform.position.y + Math.Cos(angle) * 1);
+                rb.velocity = data.Velocity * 5;
+                rb.rotation = data.WeaponAngle;
 
-            weapon.transform.position = weaponPos;
-            weapon.transform.up = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y);
+                weaponPos.x = (float)(transform.position.x + Math.Sin(data.WeaponAngle) * 1);
+                weaponPos.y = (float)(transform.position.y + Math.Cos(data.WeaponAngle) * 1);
 
-            //if (Input.GetMouseButton(0)) this.FireWeapon();
-
+                weapon.transform.position = weaponPos;
+                weapon.transform.up = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y);
             }
-
         }
+
     }
 
     public GameObject getWeapon(){

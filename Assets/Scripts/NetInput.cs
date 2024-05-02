@@ -5,7 +5,7 @@ using UnityEngine;
 
 public struct NetInput : INetworkInput
 {
-    public float weaponAngle;
-    public bool pickupWeapon;
+    public float WeaponAngle;
+    public bool PickupWeapon;
     public Vector2 Velocity;
 }
