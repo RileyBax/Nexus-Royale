@@ -88,6 +88,8 @@ public class PlayerScript : NetworkBehaviour
                 PickupWeapon(nearbyWeapons[0]);
             }
 
+            if (weapon != null)
+            {
             float angle = data.weaponAngle;
 
             // Rotates weapon towards mouse
@@ -98,6 +100,9 @@ public class PlayerScript : NetworkBehaviour
             weapon.transform.up = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y);
 
             //if (Input.GetMouseButton(0)) this.FireWeapon();
+
+            }
+
         }
     }
 
