@@ -8,8 +8,6 @@ public class PlayerScript : NetworkBehaviour
 {
     private GameObject weapon;
     private List<GameObject> nearbyWeapons;
-    private Vector2 weaponPos;
-    private Vector3 mousePos;
     private UnityEngine.UI.Image[] inventoryUI;
     private GameObject[] inventory;
     [SerializeField] private GameObject hud;
@@ -31,7 +29,6 @@ public class PlayerScript : NetworkBehaviour
         this.inventoryUI = new UnityEngine.UI.Image[3];
         this.inventory = new GameObject[3];
 
-        weaponPos = new Vector2();
         hud = GameObject.Find("HUD");
 
         for(int i = 0; i < inventoryUI.Length; i++) inventoryUI[i] = hud.transform.GetChild(0).GetChild(i).GetComponent<UnityEngine.UI.Image>();
@@ -40,10 +37,6 @@ public class PlayerScript : NetworkBehaviour
 
     // Update is called once per frame
     void Update(){
-
-        mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-        // Rotates weapon towards mouse
 
         // Inventory selection
         if(Input.anyKeyDown){
@@ -91,15 +84,15 @@ public class PlayerScript : NetworkBehaviour
             if (weapon != null)
             {
                 Rigidbody2D rb = weapon.GetComponent<Rigidbody2D>();
-                float angle = -(float)Math.Atan2(mousePos.y - transform.position.y, mousePos.x - transform.position.x) + 1.55f;
+                float angle = -(float)Math.Atan2(data.MousePos.y - transform.position.y, data.MousePos.x - transform.position.x) + 1.55f;
 
-                //rb.velocity = data.Velocity * 5;
+                Vector3 weaponPos = Vector3.zero;
 
                 weaponPos.x = (float)(transform.position.x + Math.Sin(angle) * 1);
                 weaponPos.y = (float)(transform.position.y + Math.Cos(angle) * 1);
 
                 weapon.transform.position = weaponPos;
-                weapon.transform.up = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y);
+                weapon.transform.up = new Vector2(data.MousePos.x - transform.position.x, data.MousePos.y - transform.position.y);
             }
         }
 
