@@ -8,6 +8,8 @@ public class SMGScript : MonoBehaviour
     private float fireRate = 0.0f;
     private bool isEquipped = false;
     GameObject character;
+    private int damage = 18;
+    private int ammo = 30;
 
     // Start is called before the first frame update
     void Start()
@@ -29,7 +31,7 @@ public class SMGScript : MonoBehaviour
 
             fireRate = 0.2f;
 
-            Instantiate(bullet).SendMessage("init", new BulletInit(0, character, this.gameObject));
+            Instantiate(bullet).SendMessage("init", new BulletInit(0, character, this.gameObject, damage));
 
         }
 

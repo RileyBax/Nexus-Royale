@@ -87,7 +87,7 @@ public class PlayerScript : NetworkBehaviour
                 
                 if (data.FireWeapon)
                 {
-                    weapon.SendMessage("FireWeapon");
+                    weapon.SendMessage("FireWeapon", new Vector3(data.MousePos.x, data.MousePos.y, 0));
                 }
             }
 

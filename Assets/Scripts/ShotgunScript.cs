@@ -8,6 +8,8 @@ public class ShotgunScript : MonoBehaviour
     private float fireRate = 0.0f;
     private bool isEquipped = false;
     GameObject character;
+    private int damage = 18;
+    private int ammo = 30;
 
     // Start is called before the first frame update
     void Start()
@@ -29,9 +31,9 @@ public class ShotgunScript : MonoBehaviour
 
             fireRate = 1.5f;
 
-            Instantiate(bullet).SendMessage("init", new BulletInit(0, character, this.gameObject));
-            Instantiate(bullet).SendMessage("init", new BulletInit(-10, character, this.gameObject));
-            Instantiate(bullet).SendMessage("init", new BulletInit(10, character, this.gameObject));
+            Instantiate(bullet).SendMessage("init", new BulletInit(0, character, this.gameObject, damage));
+            Instantiate(bullet).SendMessage("init", new BulletInit(-10, character, this.gameObject, damage));
+            Instantiate(bullet).SendMessage("init", new BulletInit(10, character, this.gameObject, damage));
 
         }
 

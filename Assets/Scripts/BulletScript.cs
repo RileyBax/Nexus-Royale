@@ -1,26 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+using Fusion;
+using Fusion.Addons.Physics;
 using UnityEngine;
 
-public class BulletScript : MonoBehaviour
+public class BulletScript : NetworkBehaviour
 {
 
-    private Rigidbody2D rb;
+    private NetworkRigidbody2D rb;
     private GameObject character;
     private GameObject weapon;
     private float timer;
     private int angle = 0;
-    private int damage = 30;
+    private int damage;
 
     // Start is called before the first frame update
-    void Start(){
+    void Start()
+    {
 
-        rb = GetComponent<Rigidbody2D>();
-        timer = 5.0f;
+        rb = GetComponent<NetworkRigidbody2D>();
+        timer = 3.0f;
 
         transform.position = weapon.transform.position + (weapon.transform.position - character.transform.position);
-        
+
         transform.up = weapon.transform.up;
 
         transform.Rotate(0, 0, angle);
@@ -30,34 +30,47 @@ public class BulletScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
         // Moves on local Y axis until destroyed
 
         rb.transform.Translate(0, 10 * Time.deltaTime, 0);
         timer -= Time.deltaTime;
 
-        if(timer <= 0) Destroy(transform.root.gameObject);
+        if (timer <= 0) Destroy(transform.root.gameObject);
 
     }
 
     // Initializes bullet, called from weapon script
-    void init(BulletInit bInit){
+    void init(BulletInit bInit)
+    {
 
         angle = bInit.angle;
         character = bInit.character;
         weapon = bInit.weapon;
+        damage = bInit.damage;
 
     }
 
-    void OnTriggerStay2D(Collider2D col){
+    void OnTriggerStay2D(Collider2D col)
+    {
 
         // causing error when bullet hits but character is not active
-        if(col.tag == "Character" && col.gameObject.activeSelf) {
+        if (isCharacter(col) && col.gameObject.activeSelf)
+        {
             col.SendMessage("updateHealth", damage);
             Destroy(transform.root.gameObject);
         }
-        else if(col.tag == "Object") Destroy(transform.root.gameObject);
-        
+        else if (col.tag == "Object") Destroy(transform.root.gameObject);
+
+    }
+
+    bool isCharacter(Collider2D col)
+    {
+
+        if (col.tag.Equals("Character") || col.tag.Equals("Player")) return true;
+
+        return false;
+
     }
 
 }

@@ -10,6 +10,8 @@ public class RifleScript : NetworkBehaviour
     private float fireRate = 0.0f;
     private bool isEquipped = false;
     GameObject character;
+    private int damage = 50;
+    private int ammo = 10;
 
     private Rigidbody2D rigidBody;
 
@@ -20,6 +22,7 @@ public class RifleScript : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
+        if (fireRate >= 0) fireRate -= Runner.DeltaTime;
     }
 
     public void OnTriggerEnter2D(Collider2D collision)
@@ -38,24 +41,16 @@ public class RifleScript : NetworkBehaviour
         }
     }
 
-    void FireWeapon(){
+    void FireWeapon(Vector3 mousePos){
 
-        if (fireRate <= 0.0f) {
+        if (fireRate <= 0.0f)
+        {
 
-            //fireRate = 1.0f;
+            fireRate = 1.0f;
 
-            //Instantiate(bullet).SendMessage("init", new BulletInit(0, character, this.gameObject));
-            Debug.Log("Firing");
-            Debug.Log(Runner);
-            Debug.Log(Runner.LagCompensation);
+            Instantiate(bullet).SendMessage("init", new BulletInit(0, character, this.gameObject, damage));
 
-
-            if (Runner.LagCompensation.Raycast(transform.position, transform.forward, 100, Object.InputAuthority, out var hit)) { 
-                if (hit.Hitbox != null && hit.Hitbox.tag == "Character")
-                {
-                    Debug.Log("Hit Player");
-                }
-            }
+            //if (character.tag.Equals("Player")) ammo--;
 
         }
 
