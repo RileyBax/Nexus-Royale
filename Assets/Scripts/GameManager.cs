@@ -1,6 +1,4 @@
 using Fusion;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
@@ -12,9 +10,9 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     public override void Spawned()
     {
         Debug.Log("Spawned");
-        if (HasStateAuthority) {
-        Runner.Spawn(weaponPrefab, new Vector3(0, 0, 0));
-        Runner.Spawn(weaponPrefab, new Vector3(5, 5, 0));
+        if (Runner.IsServer) {
+            Runner.Spawn(weaponPrefab, new Vector3(0, 0, 0));
+            Runner.Spawn(weaponPrefab, new Vector3(5, 5, 0));
             Runner.Spawn(weaponPrefab, new Vector3(-5, -10, 0));
         }
     }

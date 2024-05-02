@@ -1,4 +1,5 @@
 using Fusion;
+using Fusion.Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,11 +23,16 @@ public class MenuManager : MonoBehaviour
 
     public async void StartGame(GameMode mode)
     {
+        var appSettings = PhotonAppSettings.Global.AppSettings.GetCopy();
+        appSettings.FixedRegion = "au";
+        appSettings.UseNameServer = true;
+
         var args = new StartGameArgs();
 
         args.GameMode = mode;
         args.SessionName = "Room 1";
         args.PlayerCount = 20;
+        args.CustomPhotonAppSettings = appSettings;
 
         _runner = CreateRunner();
         var sceneManager = _runner.gameObject.AddComponent<NetworkSceneManagerDefault>();
@@ -37,6 +43,7 @@ public class MenuManager : MonoBehaviour
 
         if (startGameResult.Ok)
         {
+            Debug.Log(_runner.LagCompensation);
         await _runner.LoadScene(SceneRef.FromIndex(1));
         }
     }

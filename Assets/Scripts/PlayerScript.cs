@@ -84,7 +84,13 @@ public class PlayerScript : NetworkBehaviour
 
                 weapon.transform.position = weaponPos;
                 weapon.transform.up = new Vector2(data.MousePos.x - transform.position.x, data.MousePos.y - transform.position.y);
+                
+                if (data.FireWeapon)
+                {
+                    weapon.SendMessage("FireWeapon");
+                }
             }
+
         }
 
     }

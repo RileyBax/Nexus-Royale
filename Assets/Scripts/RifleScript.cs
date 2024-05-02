@@ -1,4 +1,5 @@
 using Fusion;
+using Fusion.Addons.Physics;
 using System;
 using UnityEngine;
 
@@ -19,16 +20,6 @@ public class RifleScript : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        //if (character != null & GetInput(out NetInput data))
-        //{
-        //Debug.Log(character);
-        //    float angle = data.WeaponAngle;
-
-        //    rigidBody.velocity = data.Velocity * 5;
-        //    rigidBody.rotation = angle;
-        //}
-
-        // if(fireRate >= 0) fireRate -= Time.deltaTime;
     }
 
     public void OnTriggerEnter2D(Collider2D collision)
@@ -49,11 +40,22 @@ public class RifleScript : NetworkBehaviour
 
     void FireWeapon(){
 
-        if(fireRate <= 0.0f){
+        if (fireRate <= 0.0f) {
 
-            fireRate = 1.0f;
+            //fireRate = 1.0f;
 
-            Instantiate(bullet).SendMessage("init", new BulletInit(0, character, this.gameObject));
+            //Instantiate(bullet).SendMessage("init", new BulletInit(0, character, this.gameObject));
+            Debug.Log("Firing");
+            Debug.Log(Runner);
+            Debug.Log(Runner.LagCompensation);
+
+
+            if (Runner.LagCompensation.Raycast(transform.position, transform.forward, 100, Object.InputAuthority, out var hit)) { 
+                if (hit.Hitbox != null && hit.Hitbox.tag == "Character")
+                {
+                    Debug.Log("Hit Player");
+                }
+            }
 
         }
 

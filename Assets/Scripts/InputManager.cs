@@ -13,12 +13,14 @@ public class InputManager : SimulationBehaviour, IBeforeUpdate, INetworkRunnerCa
 
     public void BeforeUpdate()
     {
+        // Reset the input
         if (resetInput)
         {
             resetInput = false;
             accumulatedInput = default;
         }
 
+        // Player movement
         Vector2 movement = Vector2.zero;
 
         movement.x = Input.GetAxisRaw("Horizontal");
@@ -26,11 +28,13 @@ public class InputManager : SimulationBehaviour, IBeforeUpdate, INetworkRunnerCa
 
         accumulatedInput.Velocity += movement * 5;
 
+        // If they are trying to interact with something
         if (Input.GetKey(KeyCode.E))
         {
             accumulatedInput.PickupWeapon = true;
         }
 
+        // If they are trying to change weapon slots
         accumulatedInput.WeaponChange = 0;
 
         if (Input.GetKey(KeyCode.Alpha1))
@@ -46,6 +50,7 @@ public class InputManager : SimulationBehaviour, IBeforeUpdate, INetworkRunnerCa
             accumulatedInput.WeaponChange = 3;
         }
 
+        // Get the moust position for aiming
         accumulatedInput.MousePos = Input.mousePosition;
 
         if (CameraFollower.Singleton != null)
@@ -55,7 +60,13 @@ public class InputManager : SimulationBehaviour, IBeforeUpdate, INetworkRunnerCa
         accumulatedInput.MousePos = camera.ScreenToWorldPoint(Input.mousePosition);
         }
 
+        // Fire Weapon
+        accumulatedInput.FireWeapon = false;
 
+        if (Input.GetMouseButton(0))
+        {
+            accumulatedInput.FireWeapon = true;
+        }
 
     }
 
