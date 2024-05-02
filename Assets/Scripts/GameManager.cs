@@ -12,7 +12,11 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     public override void Spawned()
     {
         Debug.Log("Spawned");
-        NetworkObject weaponObject = Runner.Spawn(weaponPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        if (HasStateAuthority) {
+        Runner.Spawn(weaponPrefab, new Vector3(0, 0, 0));
+        Runner.Spawn(weaponPrefab, new Vector3(5, 5, 0));
+            Runner.Spawn(weaponPrefab, new Vector3(-5, -10, 0));
+        }
     }
 
     public void PlayerJoined(PlayerRef player)

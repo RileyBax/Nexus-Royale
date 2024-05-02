@@ -1,15 +1,16 @@
 using Fusion;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerScript : NetworkBehaviour
 {
     private GameObject weapon;
+    private List<GameObject> nearbyWeapons;
     private Vector2 weaponPos;
     private Vector3 mousePos;
-    private float angle;
-    private UnityEngine.UI.Image[] inventoryUI = new UnityEngine.UI.Image[3];
-    private GameObject[] inventory = new GameObject[3];
+    private UnityEngine.UI.Image[] inventoryUI;
+    private GameObject[] inventory;
     [SerializeField] private GameObject hud;
     // Camera target (the main camera) reference
     [SerializeField] private Transform camTarget;
@@ -25,6 +26,9 @@ public class PlayerScript : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        this.nearbyWeapons = new List<GameObject>();
+        this.inventoryUI = new UnityEngine.UI.Image[3];
+        this.inventory = new GameObject[3];
 
         weaponPos = new Vector2();
         hud = GameObject.Find("HUD");
@@ -37,9 +41,6 @@ public class PlayerScript : NetworkBehaviour
     void Update(){
 
         mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-        // Angle to mouse position
-        angle = -(float) Math.Atan2(mousePos.y - transform.position.y, mousePos.x - transform.position.x) + 1.55f;
 
         // Rotates weapon towards mouse
 
@@ -81,43 +82,51 @@ public class PlayerScript : NetworkBehaviour
         {
             rigidBody.velocity = data.Velocity * 5;
             //weapon.transform.position = rigidBody.position;
-        }
-    }
 
-    // Handles collisions and weapon equip
-    void OnTriggerStay2D(Collider2D col){
-
-        if(col.tag == "Weapon"){
-
-            col.gameObject.SendMessage("getEquipped", transform.gameObject);
-
-            if(Input.GetKey(KeyCode.E) && !isEquipped){
-
-                weapon = col.gameObject;
-
-                if(inventory[selectedWeapon] != null) {
-                    
-                    inventory[selectedWeapon].SendMessage("setEquipped", false);
-                    inventory[selectedWeapon].SendMessage("setCharacterNull");
-
-                }
-
-                inventoryUI[selectedWeapon].sprite = weapon.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
-                inventory[selectedWeapon] = col.gameObject;
-                col.gameObject.SendMessage("setEquipped", true);
-                col.gameObject.SendMessage("setCharacter", transform.gameObject);
-                // can change above to remove equipped boolean but dont want to
-
+            if (data.pickupWeapon && !isEquipped && nearbyWeapons.Count > 0)
+            {
+                PickupWeapon(nearbyWeapons[0]);
             }
-
         }
-
     }
 
     public GameObject getWeapon(){
 
         return weapon;
 
+    }
+
+    public void PickupWeapon(GameObject weapon)
+    {
+            // For the bots
+            // weapon.gameObject.SendMessage("getEquipped", weapon);
+
+            if (inventory[selectedWeapon] != null)
+            {
+
+                inventory[selectedWeapon].SendMessage("setEquipped", false);
+                inventory[selectedWeapon].SendMessage("setCharacterNull");
+
+            }
+
+                inventoryUI[selectedWeapon].sprite = weapon.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
+                inventory[selectedWeapon] = weapon.gameObject;
+                weapon.gameObject.SendMessage("setEquipped", true);
+                weapon.gameObject.SendMessage("setCharacter", this.gameObject);
+                // can change above to remove equipped boolean but dont want to
+
+        nearbyWeapons.Remove(weapon);
+    }
+
+    public void AddNearbyWeapon(GameObject weapon)
+    {
+        nearbyWeapons.Add(weapon);
+        Debug.Log(nearbyWeapons.Count);
+    }
+
+    public void RemoveNeabyWeapon(GameObject weapon)
+    {
+        nearbyWeapons.Remove(weapon);
     }
 
     // Swap weapon between those in inventory

@@ -24,6 +24,11 @@ public class InputManager : SimulationBehaviour, IBeforeUpdate, INetworkRunnerCa
         movement.y = Input.GetAxisRaw("Vertical");
 
         accumulatedInput.Velocity += movement * 5;
+
+        if (Input.GetKey(KeyCode.E))
+        {
+            accumulatedInput.pickupWeapon = true;
+        }
     }
 
     public void OnConnectedToServer(NetworkRunner runner)

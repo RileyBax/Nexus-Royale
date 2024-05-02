@@ -42,6 +42,22 @@ public class RifleScript : NetworkBehaviour
         }
     }
 
+    public void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (Runner.IsServer && collision.tag == "Character" && collision.attachedRigidbody != null && collision.attachedRigidbody.TryGetComponent(out PlayerScript player))
+        {
+            player.AddNearbyWeapon(this.gameObject);
+        }
+    }
+
+    public void OnTriggerExit2D(Collider2D collision)
+    {
+        if (Runner.IsServer && collision.tag == "Character" && collision.attachedRigidbody != null && collision.attachedRigidbody.TryGetComponent(out PlayerScript player))
+        {
+            player.RemoveNeabyWeapon(this.gameObject);
+        }
+    }
+
     void FireWeapon(){
 
         if(fireRate <= 0.0f){
@@ -63,14 +79,19 @@ public class RifleScript : NetworkBehaviour
     void setCharacter(GameObject c){
 
         character = c;
-        //Runner.Despawn(this.Object);
+        if (this.gameObject.TryGetComponent(out BoxCollider2D collider)) {
+            collider.enabled = false;
+        }
 
     }
 
     void setCharacterNull(){
 
         character = null;
-
+        if (this.gameObject.TryGetComponent(out BoxCollider2D collider))
+        {
+            collider.enabled = true;
+        }
     }
 
     void getEquipped(GameObject bot){
