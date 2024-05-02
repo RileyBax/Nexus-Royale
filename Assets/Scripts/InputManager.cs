@@ -31,15 +31,13 @@ public class InputManager : SimulationBehaviour, IBeforeUpdate, INetworkRunnerCa
             accumulatedInput.PickupWeapon = true;
         }
 
+        accumulatedInput.MousePos = Input.mousePosition;
 
         if (CameraFollower.Singleton != null)
         {
         Camera camera = CameraFollower.Singleton.GetCamera();
 
-        Vector3 mousePos = camera.ScreenToWorldPoint(Input.mousePosition);
-
-        // Angle to mouse position
-        accumulatedInput.WeaponAngle = -(float)Math.Atan2(mousePos.y - transform.position.y, mousePos.x - transform.position.x) + 1.55f;
+        accumulatedInput.MousePos = camera.ScreenToWorldPoint(Input.mousePosition);
         }
 
 

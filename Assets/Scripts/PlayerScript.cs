@@ -91,12 +91,12 @@ public class PlayerScript : NetworkBehaviour
             if (weapon != null)
             {
                 Rigidbody2D rb = weapon.GetComponent<Rigidbody2D>();
+                float angle = -(float)Math.Atan2(mousePos.y - transform.position.y, mousePos.x - transform.position.x) + 1.55f;
 
-                rb.velocity = data.Velocity * 5;
-                rb.rotation = data.WeaponAngle;
+                //rb.velocity = data.Velocity * 5;
 
-                weaponPos.x = (float)(transform.position.x + Math.Sin(data.WeaponAngle) * 1);
-                weaponPos.y = (float)(transform.position.y + Math.Cos(data.WeaponAngle) * 1);
+                weaponPos.x = (float)(transform.position.x + Math.Sin(angle) * 1);
+                weaponPos.y = (float)(transform.position.y + Math.Cos(angle) * 1);
 
                 weapon.transform.position = weaponPos;
                 weapon.transform.up = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y);
