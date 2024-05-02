@@ -2,6 +2,7 @@ using Fusion;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public class PlayerScript : NetworkBehaviour
 {
@@ -81,12 +82,22 @@ public class PlayerScript : NetworkBehaviour
         if (GetInput(out NetInput data))
         {
             rigidBody.velocity = data.Velocity * 5;
-            //weapon.transform.position = rigidBody.position;
 
             if (data.pickupWeapon && !isEquipped && nearbyWeapons.Count > 0)
             {
                 PickupWeapon(nearbyWeapons[0]);
             }
+
+            float angle = data.weaponAngle;
+
+            // Rotates weapon towards mouse
+            weaponPos.x = (float)(transform.position.x + Math.Sin(angle) * 1);
+            weaponPos.y = (float)(transform.position.y + Math.Cos(angle) * 1);
+
+            weapon.transform.position = weaponPos;
+            weapon.transform.up = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y);
+
+            //if (Input.GetMouseButton(0)) this.FireWeapon();
         }
     }
 
@@ -114,6 +125,8 @@ public class PlayerScript : NetworkBehaviour
                 weapon.gameObject.SendMessage("setEquipped", true);
                 weapon.gameObject.SendMessage("setCharacter", this.gameObject);
                 // can change above to remove equipped boolean but dont want to
+
+        this.weapon = weapon;
 
         nearbyWeapons.Remove(weapon);
     }
