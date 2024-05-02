@@ -12,10 +12,27 @@ public class BulletScript : NetworkBehaviour
     private int angle = 0;
     private int damage;
 
-    // Start is called before the first frame update
-    void Start()
+    // Update is called once per frame
+    public override void FixedUpdateNetwork()
+    {
+        // Moves on local Y axis until destroyed
+        rb.transform.Translate(0, 10 * Runner.DeltaTime, 0);
+        timer -= Runner.DeltaTime;
+
+        if (timer <= 0) Destroy(transform.root.gameObject);
+
+    }
+
+    // Initializes bullet, called from weapon script
+    public void init(BulletInit bInit)
     {
 
+        angle = bInit.angle;
+        character = bInit.character;
+        weapon = bInit.weapon;
+        damage = bInit.damage;
+
+        Debug.Log(angle);
         rb = GetComponent<NetworkRigidbody2D>();
         timer = 3.0f;
 
@@ -27,30 +44,6 @@ public class BulletScript : NetworkBehaviour
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-        // Moves on local Y axis until destroyed
-
-        rb.transform.Translate(0, 10 * Time.deltaTime, 0);
-        timer -= Time.deltaTime;
-
-        if (timer <= 0) Destroy(transform.root.gameObject);
-
-    }
-
-    // Initializes bullet, called from weapon script
-    void init(BulletInit bInit)
-    {
-
-        angle = bInit.angle;
-        character = bInit.character;
-        weapon = bInit.weapon;
-        damage = bInit.damage;
-
-    }
-
     void OnTriggerStay2D(Collider2D col)
     {
 
@@ -58,7 +51,7 @@ public class BulletScript : NetworkBehaviour
         if (isCharacter(col) && col.gameObject.activeSelf)
         {
             col.SendMessage("updateHealth", damage);
-            Destroy(transform.root.gameObject);
+            Runner.Despawn(this.GetComponent<NetworkObject>());
         }
         else if (col.tag == "Object") Destroy(transform.root.gameObject);
 

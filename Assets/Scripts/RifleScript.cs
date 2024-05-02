@@ -1,12 +1,10 @@
 using Fusion;
-using Fusion.Addons.Physics;
-using System;
 using UnityEngine;
 
 public class RifleScript : NetworkBehaviour
 {
 
-    [SerializeField] GameObject bullet;
+    [SerializeField] NetworkObject BulletPrefab;
     private float fireRate = 0.0f;
     private bool isEquipped = false;
     GameObject character;
@@ -48,7 +46,14 @@ public class RifleScript : NetworkBehaviour
 
             fireRate = 1.0f;
 
-            Instantiate(bullet).SendMessage("init", new BulletInit(0, character, this.gameObject, damage));
+            NetworkObject bulletObject = Runner.Spawn(BulletPrefab, transform.position);
+            BulletScript bullet = bulletObject.GetComponent<BulletScript>();
+            if (bullet != null)
+            {
+                bullet.init(new BulletInit(0, character, this.gameObject, damage));
+            }
+
+            //Instantiate(bullet).SendMessage("init", new BulletInit(0, character, this.gameObject, damage));
 
             //if (character.tag.Equals("Player")) ammo--;
 

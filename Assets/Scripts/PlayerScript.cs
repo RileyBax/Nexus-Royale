@@ -2,7 +2,6 @@ using Fusion;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 
 public class PlayerScript : NetworkBehaviour
 {
@@ -158,7 +157,7 @@ public class PlayerScript : NetworkBehaviour
     public void updateHealth(int damage){
 
         health -= damage;
-        if(health <= 0) transform.gameObject.SetActive(false);
+        if(health <= 0) Runner.Despawn(this.GetComponent<NetworkObject>());
 
     }
 
