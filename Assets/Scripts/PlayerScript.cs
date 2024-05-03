@@ -93,9 +93,8 @@ public class PlayerScript : NetworkBehaviour
 
         }
 
-        double ping = Runner.GetPlayerRtt(PlayerRef.None);
+        double ping = Runner.GetPlayerRtt(PlayerRef.None) * 1000;
 
-        Debug.Log(ping);
         if (hud != null)
         {
 
