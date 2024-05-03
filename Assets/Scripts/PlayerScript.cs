@@ -1,6 +1,7 @@
 using Fusion;
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class PlayerScript : NetworkBehaviour
@@ -90,6 +91,15 @@ public class PlayerScript : NetworkBehaviour
                 }
             }
 
+        }
+
+        double ping = Runner.GetPlayerRtt(PlayerRef.None);
+
+        Debug.Log(ping);
+        if (hud != null)
+        {
+
+        hud.transform.GetChild(1).GetComponent<TMP_Text>().text = ping.ToString();
         }
 
     }
