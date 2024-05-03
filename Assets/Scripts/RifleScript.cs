@@ -13,11 +13,6 @@ public class RifleScript : NetworkBehaviour
 
     private Rigidbody2D rigidBody;
 
-    private void Awake()
-    {
-        rigidBody = GetComponent<Rigidbody2D>();
-    }
-
     public override void FixedUpdateNetwork()
     {
         if (fireRate >= 0) fireRate -= Runner.DeltaTime;
@@ -52,8 +47,6 @@ public class RifleScript : NetworkBehaviour
             {
                 bullet.init(new BulletInit(0, character, this.gameObject, damage));
             }
-
-            //Instantiate(bullet).SendMessage("init", new BulletInit(0, character, this.gameObject, damage));
 
             //if (character.tag.Equals("Player")) ammo--;
 

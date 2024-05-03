@@ -96,7 +96,9 @@ GameObject:
   - component: {fileID: 49462906955877321}
   - component: {fileID: 6299358568561534022}
   - component: {fileID: 7092219717903173702}
-  - component: {fileID: 6001064154444238966}
+  - component: {fileID: -8808687685727093830}
+  - component: {fileID: 6695039042977815930}
+  - component: {fileID: 4875038449759305369}
   m_Layer: 0
   m_Name: Shotgun
   m_TagString: Weapon
@@ -184,7 +186,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbd374b166d6ce04aa43dd675d0578fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bullet: {fileID: 6843712240695877828, guid: 53870f67e4611ac4b9ac1a8baba15002, type: 3}
+  BulletPrefab: {fileID: 6843712240695877828, guid: 53870f67e4611ac4b9ac1a8baba15002, type: 3}
 --- !u!61 &7092219717903173702
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -230,7 +232,26 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!50 &6001064154444238966
+--- !u!114 &-8808687685727093830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7988433743100049677}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 2063457622
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 6299358568561534022}
+  - {fileID: 4875038449759305369}
+--- !u!50 &6695039042977815930
 Rigidbody2D:
   serializedVersion: 4
   m_ObjectHideFlags: 0
@@ -257,3 +278,25 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &4875038449759305369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7988433743100049677}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5e690b5fb1084f5ab1c86457af401d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SyncScale: 0
+  SyncParent: 1
+  _interpolationTarget: {fileID: 0}
+  UsePreciseRotation: 0
+  UseRenderSleepThresholds: 1
+  RenderThresholds:
+    UseEnergy: 1
+    Position: 0.01
+    Rotation: 0.01
+    Scale: 0.01
