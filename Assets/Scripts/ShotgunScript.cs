@@ -1,8 +1,4 @@
 using Fusion;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using static Unity.Collections.Unicode;
 
 public class ShotgunScript : Weapon
 {

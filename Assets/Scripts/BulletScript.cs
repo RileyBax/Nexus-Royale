@@ -32,7 +32,6 @@ public class BulletScript : NetworkBehaviour
         weapon = bInit.weapon;
         damage = bInit.damage;
 
-        Debug.Log(angle);
         rb = GetComponent<NetworkRigidbody2D>();
         timer = 3.0f;
 

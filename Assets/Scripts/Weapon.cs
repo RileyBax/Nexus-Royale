@@ -52,7 +52,11 @@ public class Weapon : NetworkBehaviour
             }
 
         }
+    }
 
+    public void SetVisible(bool visible)
+    {
+        this.gameObject.SetActive(visible);
     }
 
     void setEquipped(bool e)
@@ -60,12 +64,12 @@ public class Weapon : NetworkBehaviour
         IsEquipped = e;
     }
 
-    void setCharacter(GameObject c)
+    public void SetPlayer(GameObject p)
     {
-        Player = c;
+        Player = p;
     }
 
-    void setCharacterNull()
+    public void RemovePlayer()
     {
         Player = null;
     }

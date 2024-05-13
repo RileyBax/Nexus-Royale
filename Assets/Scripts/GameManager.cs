@@ -10,7 +10,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     [SerializeField] private NetworkObject SMGPrefab;
     [SerializeField] private Tilemap Tilemap;
 
-    [Networked, Capacity(20)] private NetworkDictionary<PlayerRef, PlayerScript> Players => default;
+    [Networked, Capacity(20)] public NetworkDictionary<PlayerRef, PlayerScript> Players => default;
 
     public override void Spawned()
     {

@@ -6,16 +6,14 @@ using UnityEngine;
 
 public class PlayerScript : NetworkBehaviour
 {
-    private GameObject weapon;
+    public Weapons Weapons;
     private List<GameObject> nearbyWeapons;
     private UnityEngine.UI.Image[] inventoryUI;
     private GameObject[] inventory;
     [SerializeField] private GameObject hud;
     // Camera target (the main camera) reference
     [SerializeField] private Transform camTarget;
-    private int selectedWeapon = 0;
-    private int health = 100;
-    private bool isEquipped;
+    private int Health = 100;
 
     // Is the player ready to play
     private bool isReady;
@@ -40,6 +38,7 @@ public class PlayerScript : NetworkBehaviour
         if (HasInputAuthority)
         {
             CameraFollower.Singleton.SetTarget(camTarget);
+            Weapons = new Weapons();
         }
     }
 
@@ -56,22 +55,15 @@ public class PlayerScript : NetworkBehaviour
 
             if (data.WeaponChange != 0)
             {
-                changeWeapon(data.WeaponChange - 1);
-
-                for (int i = 0; i < inventoryUI.Length; i++)
-                {
-
-                    if (i != selectedWeapon) inventoryUI[i].color = Color.grey;
-                    else inventoryUI[i].color = Color.blue;
-
-                }
+                Weapons.ChangeWeapon(data.WeaponChange);
             }
 
-            if (data.PickupWeapon && !isEquipped && nearbyWeapons.Count > 0)
+            if (data.PickupWeapon && nearbyWeapons.Count > 0)
             {
                 PickupWeapon(nearbyWeapons[0]);
             }
 
+            Weapon weapon = Weapons.GetSelectedWeapon();
             if (weapon != null)
             {
                 Rigidbody2D rb = weapon.GetComponent<Rigidbody2D>();
@@ -103,34 +95,13 @@ public class PlayerScript : NetworkBehaviour
 
     }
 
-    public GameObject getWeapon(){
-
-        return weapon;
-
-    }
-
-    public void PickupWeapon(GameObject weapon)
+    public void PickupWeapon(GameObject w)
     {
-            // For the bots
-            // weapon.gameObject.SendMessage("getEquipped", weapon);
+        Weapon weapon = w.GetComponent<Weapon>();
+        Weapons.PickupWeapon(weapon);
+        weapon.SetPlayer(this.gameObject);
 
-            if (inventory[selectedWeapon] != null)
-            {
-
-                inventory[selectedWeapon].SendMessage("setEquipped", false);
-                inventory[selectedWeapon].SendMessage("setCharacterNull");
-
-            }
-
-                inventoryUI[selectedWeapon].sprite = weapon.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
-                inventory[selectedWeapon] = weapon.gameObject;
-                weapon.gameObject.SendMessage("setEquipped", true);
-                weapon.gameObject.SendMessage("setCharacter", this.gameObject);
-                // can change above to remove equipped boolean but dont want to
-
-        this.weapon = weapon;
-
-        nearbyWeapons.Remove(weapon);
+        nearbyWeapons.Remove(w);
     }
 
     public void AddNearbyWeapon(GameObject weapon)
@@ -144,35 +115,11 @@ public class PlayerScript : NetworkBehaviour
         nearbyWeapons.Remove(weapon);
     }
 
-    // Swap weapon between those in inventory
-    public void changeWeapon(int selected){
-
-        // fix weapon angle jitter on swap
-
-        selectedWeapon = selected;
-
-        if(weapon != null) weapon.gameObject.SetActive(false);
-        if(inventory[selectedWeapon] != null) {
-
-            weapon = inventory[selectedWeapon];
-            weapon.gameObject.SetActive(true);
-
-        }
-        else weapon = null;
-
-    }
-
     // Updates health, called from bullet script
     public void updateHealth(int damage){
 
-        health -= damage;
-        if(health <= 0) Runner.Despawn(this.GetComponent<NetworkObject>());
-
-    }
-
-    void setIsEquipped(bool e){
-
-        isEquipped = e;
+        Health -= damage;
+        if(Health <= 0) Runner.Despawn(this.GetComponent<NetworkObject>());
 
     }
 
