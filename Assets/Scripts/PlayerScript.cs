@@ -14,6 +14,8 @@ public class PlayerScript : NetworkBehaviour
     // Camera target (the main camera) reference
     [SerializeField] private Transform camTarget;
     private int Health = 100;
+    [SerializeField] Animator animator;
+    [SerializeField] SpriteRenderer sr;
 
     // Is the player ready to play
     private bool isReady;
@@ -52,6 +54,19 @@ public class PlayerScript : NetworkBehaviour
         if (GetInput(out NetInput data))
         {
             rigidBody.velocity = data.Velocity * 5;
+
+            // Handles animations Host looks fine, other players only see their own movement animations
+            animator.SetFloat("x", rigidBody.velocity.x);
+            animator.SetFloat("y", rigidBody.velocity.y);
+            if(rigidBody.velocity.x > 1 || rigidBody.velocity.x < -1) animator.SetBool("side", true);
+            else animator.SetBool("side", false);
+
+            if(rigidBody.velocity.x > 1 && sr.flipX == true){
+                sr.flipX = false;
+            }
+            else if (rigidBody.velocity.x < -1 && sr.flipX == false){
+                sr.flipX = true;
+            }
 
             if (data.WeaponChange != 0)
             {
