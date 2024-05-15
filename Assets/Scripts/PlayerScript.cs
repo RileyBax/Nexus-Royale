@@ -68,6 +68,9 @@ public class PlayerScript : NetworkBehaviour
                 sr.flipX = true;
             }
 
+            if(rigidBody.velocity.x < 1 && rigidBody.velocity.x > -1 && rigidBody.velocity.y < 1 && rigidBody.velocity.y > -1) animator.SetBool("stopped", true);
+            else animator.SetBool("stopped", false);
+
             if (data.WeaponChange != 0)
             {
                 Weapons.ChangeWeapon(data.WeaponChange);
