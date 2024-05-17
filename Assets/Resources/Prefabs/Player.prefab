@@ -46,7 +46,6 @@ GameObject:
   - component: {fileID: -1617315587742917488}
   - component: {fileID: 2730448378406619508}
   - component: {fileID: -5082026013708307095}
-  - component: {fileID: 855169153350629295}
   m_Layer: 3
   m_Name: Player
   m_TagString: Character
@@ -137,8 +136,9 @@ MonoBehaviour:
   Weapons: {fileID: 0}
   hud: {fileID: 0}
   camTarget: {fileID: 3589147229896252828}
-  animator: {fileID: 855169153350629295}
   sr: {fileID: 7749910632487039352}
+  selectedSprite: 1
+  tempsprites: []
 --- !u!114 &4843822125772668117
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -252,24 +252,3 @@ MonoBehaviour:
     Position: 0.01
     Rotation: 0.01
     Scale: 0.01
---- !u!95 &855169153350629295
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8168375091523123174}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 74ceaade94b73ff42b2ecba0ded6cd92, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0

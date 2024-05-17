@@ -12,25 +12,12 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     [SerializeField] private Tilemap Tilemap;
 
     [Networked, Capacity(20)] public NetworkDictionary<PlayerRef, PlayerScript> Players => default;
-
-    [SerializeField] private Sprite[][] spriteIdle;
-    [SerializeField] private Sprite[][] spriteWalk;
-
         
-
     public override void Spawned()
     {
         Debug.Log("Spawned");
         if (Runner.IsServer) {
             SpawnWeapons();
-        }
-
-        // load all sprites
-        for(int i = 1; i < 3; i++){
-
-            spriteWalk[i] = Resources.LoadAll<Sprite>("Sprites/" + i + " idle");
-            spriteIdle[i] = Resources.LoadAll<Sprite>("Sprites/" + i + " walk");
-
         }
 
     }
