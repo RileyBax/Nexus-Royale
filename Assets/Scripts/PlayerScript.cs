@@ -168,7 +168,6 @@ public class PlayerScript : NetworkBehaviour
             }
             
             sr.sprite = spriteIdle[frame % 6];
-            Debug.Log(frame % 6);
 
         }
         else{
