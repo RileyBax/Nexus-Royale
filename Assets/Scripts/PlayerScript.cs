@@ -24,11 +24,9 @@ public class PlayerScript : NetworkBehaviour
     [SerializeField] private Sprite[] spriteIdle;
     [SerializeField] private Sprite[] spriteWalk;
     private int selectedSprite = 1; // 1 - 10
-    private float FramesPerSec = 20;
     private float frameTime = 0;
     private int frame;
     private int startFrame;
-    private int spriteDirection = 0;
     public bool isMoving = false;
     public bool up = false;
     public bool down = true;
@@ -102,6 +100,8 @@ public class PlayerScript : NetworkBehaviour
                 }
             }
 
+            RpcUpdateSpriteState(data);
+
         }
 
         double ping = Runner.GetPlayerRtt(PlayerRef.None) * 1000;
@@ -112,7 +112,6 @@ public class PlayerScript : NetworkBehaviour
         hud.transform.GetChild(1).GetComponent<TMP_Text>().text = ping.ToString();
         }
 
-        RpcUpdateSpriteState();
         RpcUpdateSprite();
 
     }
@@ -144,14 +143,7 @@ public class PlayerScript : NetworkBehaviour
         if(Health <= 0) Runner.Despawn(this.GetComponent<NetworkObject>());
 
     }
-    
-    //public override void Render(){
 
-        //RpcUpdateSprite();
-
-    //}
-
-    [Rpc]
     void RpcUpdateSprite(){
 
         // add walk fix frames
@@ -163,7 +155,7 @@ public class PlayerScript : NetworkBehaviour
             if(frameTime >= 1){
 
                 frame += 3;
-                frameTime = 0;
+                frameTime = 0.5f;
 
             }
             
@@ -175,7 +167,7 @@ public class PlayerScript : NetworkBehaviour
             if(frameTime >= 1){
 
                 frame += 3;
-                frameTime = 0.2f;
+                frameTime = 0.7f;
 
             }
 
@@ -185,30 +177,31 @@ public class PlayerScript : NetworkBehaviour
 
     }
 
-    [Rpc]
-    void RpcUpdateSpriteState(){
+    void RpcUpdateSpriteState(NetInput data){
 
         // Handles animations states
 
-        if(rigidBody.velocity.x == 0.0f && rigidBody.velocity.y == 0.0f) isMoving = false;
+        Debug.Log(data.Velocity);
+
+        if(data.Velocity.x == 0.0f && data.Velocity.y == 0.0f) isMoving = false;
         else isMoving = true;
 
-        if(rigidBody.velocity.y > 1 && up != true){
+        if(data.Velocity.y >= 1 && up != true){
             frame = 1;
             startFrame = frame;
             up = true;
             down = false;
             side = false;
         }
-        else if(rigidBody.velocity.y < -1 && down != true){
+        else if(data.Velocity.y <= -1 && down != true){
             frame = 0;
             startFrame = frame;
             up = false;
             down = true;
             side = false;
         }
-        else if(rigidBody.velocity.x > 1 && rigidBody.velocity.y > -0.1 && rigidBody.velocity.y < 0.1 && side != true 
-        || rigidBody.velocity.x < -1 && rigidBody.velocity.y > -0.1 && rigidBody.velocity.y < 0.1 && side != true){
+        else if(data.Velocity.x >= 1 && data.Velocity.y >= -0.1 && data.Velocity.y <= 0.1 && side != true 
+        || data.Velocity.x <= -1 && data.Velocity.y >= -0.1 && data.Velocity.y <= 0.1 && side != true){
             frame = 2;
             startFrame = frame;
             up = false;
@@ -216,8 +209,8 @@ public class PlayerScript : NetworkBehaviour
             side = true;
         }
 
-        if(rigidBody.velocity.x < -1 && sr.flipX != true) sr.flipX = true;
-        else if(rigidBody.velocity.x > 1 && sr.flipX != false) sr.flipX = false;
+        if(data.Velocity.x <= -1 && sr.flipX != true) sr.flipX = true;
+        else if(data.Velocity.x >= 1 && sr.flipX != false) sr.flipX = false;
 
     }
 
