@@ -144,6 +144,7 @@ public class PlayerScript : NetworkBehaviour
 
     }
 
+    [Rpc]
     void RpcUpdateSprite(){
 
         // add walk fix frames
@@ -177,6 +178,7 @@ public class PlayerScript : NetworkBehaviour
 
     }
 
+    [Rpc]
     void RpcUpdateSpriteState(NetInput data){
 
         // Handles animations states
