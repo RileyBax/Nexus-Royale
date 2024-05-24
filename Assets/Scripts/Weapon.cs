@@ -15,10 +15,25 @@ public class Weapon : NetworkBehaviour
     protected GameObject Player;
     protected int Damage = 18;
     protected int Ammo = 30;
+    [SerializeField] SpriteRenderer sr;
+
+    void Start(){
+
+        sr = transform.GetChild(0).GetComponent<SpriteRenderer>();
+
+    }
 
     public override void FixedUpdateNetwork()
     {
         if (FireCooldown >= 0) FireCooldown -= Runner.DeltaTime;
+
+        if(Player != null){
+
+            if(transform.position.x - Player.transform.position.x < 0 && !sr.flipY) sr.flipY = true;
+            else if(transform.position.x - Player.transform.position.x > 0 && sr.flipY) sr.flipY = false;
+
+        }
+
     }
 
     public void OnTriggerEnter2D(Collider2D collision)
@@ -59,7 +74,7 @@ public class Weapon : NetworkBehaviour
         this.gameObject.SetActive(visible);
     }
 
-    void setEquipped(bool e)
+    public void setEquipped(bool e)
     {
         IsEquipped = e;
     }
@@ -78,4 +93,9 @@ public class Weapon : NetworkBehaviour
     {
         bot.SendMessage("setIsEquipped", IsEquipped);
     }
+
+    public bool GetEquipped(){
+        return IsEquipped;
+    }
+
 }

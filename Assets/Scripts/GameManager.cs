@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Fusion;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -10,15 +11,27 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     [SerializeField] private NetworkObject ShotgunPrefab;
     [SerializeField] private NetworkObject SMGPrefab;
     [SerializeField] private Tilemap Tilemap;
+    private NetworkObject BotPrefab;
+    private System.Random rand = new System.Random();
 
     [Networked, Capacity(20)] public NetworkDictionary<PlayerRef, PlayerScript> Players => default;
+    public Dictionary<NetworkId, int> Bots = new Dictionary<NetworkId, int>();
         
+    public void Start(){
+
+        BotPrefab = Resources.Load<NetworkObject>("Prefabs/Bot");
+
+    }
+
     public override void Spawned()
     {
         Debug.Log("Spawned");
         if (Runner.IsServer) {
             SpawnWeapons();
+            Runner.Spawn(RiflePrefab, new Vector3(10,10,0));
         }
+
+        SpawnBots();
 
     }
 
@@ -95,4 +108,15 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         }
 
     }
+
+    private void SpawnBots(){
+
+        int sprite = rand.Next(1, 10);
+
+        NetworkObject botObject = Runner.Spawn(BotPrefab, new Vector3(10, 10, 0));
+        Bots.Add(botObject.Id, sprite);
+        botObject.SendMessage("setSprite", Bots[botObject.Id]);
+
+    }
+
 }

@@ -1,12 +1,14 @@
 using System;
+using Fusion;
 using UnityEngine;
 
-public class BotScript : MonoBehaviour
+public class BotScript : NetworkBehaviour
 {
 
     private GameObject weaponNear;
     private GameObject weapon;
-    private Vector2 weaponPos;
+    private Weapon weaponScript;
+    private Vector3 weaponPos;
     private float angle = 0;
     private bool weaponNearEquipped;
     private float weaponNearAngle;
@@ -24,19 +26,35 @@ public class BotScript : MonoBehaviour
     private float waitTimer;
     public float offsetTimer = 2.0f;
     private int offset;
+    private Vector2 moveDir;
+    private float frameTime = 0;
+    private int frame;
+    private int startFrame;
+    public bool isMoving = false;
+    public bool up = false;
+    public bool down = true;
+    public bool side = false;
+    [SerializeField] SpriteRenderer sr;
+    [SerializeField] private Sprite[] spriteIdle;
+    [SerializeField] private Sprite[] spriteWalk;
+    [Networked] private int selectedSprite {get; set;}
+    private Vector2 lastPos;
+    private float lastPosTimer = 0.1f;
+    [SerializeField] private NetworkTransform nt;
 
     // Start is called before the first frame update
-    void Start()
+    public override void Spawned()
     {
         
         // have game manager set zone center position
         zone = new Vector2(0, 0);
 
+        spriteIdle = Resources.LoadAll<Sprite>("Sprites/" + selectedSprite + " idle");
+        spriteWalk = Resources.LoadAll<Sprite>("Sprites/" + selectedSprite + " walk");
+
     }
 
-    // Update is called once per frame
-    void Update()
-    {
+    public override void FixedUpdateNetwork(){
         
         // Searching for weapon
         if(state == 0){
@@ -52,7 +70,7 @@ public class BotScript : MonoBehaviour
                     else if(weaponNear != null && Vector3.Distance(weaponNear.transform.position, transform.position) > Vector3.Distance(transform.position, hitColliders[i].gameObject.transform.position) 
                     && hitColliders[i].tag.Equals("Weapon")){
                         
-                        hitColliders[i].gameObject.SendMessage("getEquipped", transform.gameObject);
+                        hitColliders[i].GetComponent<Weapon>().SendMessage("getEquipped", transform.gameObject);
 
                         if(!weaponNearEquipped) weaponNear = hitColliders[i].gameObject;
 
@@ -92,7 +110,7 @@ public class BotScript : MonoBehaviour
 
             if(weaponNear != null){
 
-                weaponNear.SendMessage("getEquipped", transform.gameObject);
+                weaponNear.GetComponent<Weapon>().SendMessage("getEquipped", transform.gameObject);
                 if(weaponNearEquipped) weaponNear = null;
 
             }
@@ -131,7 +149,7 @@ public class BotScript : MonoBehaviour
         // Has weapon, searching for target
         else if(state == 1){
 
-            if(target == null || !target.activeSelf){
+            if(target == null){
 
                 // Check for target in circle
                 hitColliders = Physics2D.OverlapCircleAll(transform.position, 20);
@@ -184,7 +202,7 @@ public class BotScript : MonoBehaviour
         // Target found, starts firing and moving around target position
         else if(state == 2){
 
-            if(target.activeSelf) {
+            if(target != null) {
                 
                 updateWeapon();
 
@@ -220,19 +238,115 @@ public class BotScript : MonoBehaviour
             hasWeaponCheck();
 
         }
+
         //TODO: Add check for bot stuck, set timer then choose new position to walk to
         // fix bot jitter
         // check if point moving to is inside of wall collider
+
+        moveDir = new Vector2(movePoint.x - transform.position.x, movePoint.y - transform.position.y).normalized;
+
+        rb.MovePosition(rb.position + moveDir * Runner.DeltaTime * 10);
+
+        RpcUpdateSpriteState();
+        RpcUpdateSprite();
+
+        if(lastPosTimer <= 0.0f){
+
+            lastPos = nt.transform.position;
+            lastPosTimer = 0.1f;
+            
+
+        }
+        else lastPosTimer -= Runner.DeltaTime;
 
     }
 
     void FixedUpdate(){
 
-        // Moves character in direction
+        moveDir = new Vector2(movePoint.x - transform.position.x, movePoint.y - transform.position.y).normalized;
 
-        Vector2 moveDir = new Vector2(movePoint.x - transform.position.x, movePoint.y - transform.position.y).normalized;
+        rb.MovePosition(rb.position + moveDir * Runner.DeltaTime * 10);
 
-        rb.MovePosition(rb.position + moveDir * Time.deltaTime * 5);
+        RpcUpdateSpriteState();
+        RpcUpdateSprite();
+
+        if(lastPosTimer <= 0.0f){
+
+            lastPos = nt.transform.position;
+            lastPosTimer = 0.1f;
+            
+
+        }
+        else lastPosTimer -= Runner.DeltaTime;
+
+    }
+
+    [Rpc]
+    void RpcUpdateSprite(){
+
+        frameTime += Runner.DeltaTime;
+
+        if(isMoving == false){
+
+            if(frameTime >= 1){
+
+                frame += 3;
+                frameTime = 0.5f;
+
+            }
+            
+            sr.sprite = spriteIdle[frame % 6];
+
+        }
+        else{
+
+            if(frameTime >= 1){
+
+                frame += 3;
+                frameTime = 0.7f;
+
+            }
+
+            sr.sprite = spriteWalk[frame % 12];
+
+        }
+
+    }
+
+    [Rpc]
+    void RpcUpdateSpriteState(){
+
+        // Handles animations states
+        moveDir = ((Vector2) nt.transform.position - lastPos) * 5;
+
+        if(moveDir.x == 0.0f && moveDir.y == 0.0f) isMoving = false;
+        else isMoving = true;
+
+        if(moveDir.y >= 1 && up != true){
+            frame = 1;
+            startFrame = frame;
+            up = true;
+            down = false;
+            side = false;
+        }
+        else if(moveDir.y <= -1 && down != true){
+            frame = 0;
+            startFrame = frame;
+            up = false;
+            down = true;
+            side = false;
+        }
+        else if(moveDir.x >= 1 && moveDir.y >= -0.1 && moveDir.y <= 0.1 && side != true 
+        || moveDir.x <= -1 && moveDir.y >= -0.1 && moveDir.y <= 0.1 && side != true){
+            frame = 2;
+            startFrame = frame;
+            up = false;
+            down = false;
+            side = true;
+        }
+
+        if(moveDir.x <= -1 && sr.flipX != true) sr.flipX = true;
+        else if(moveDir.x >= 1 && sr.flipX != false) sr.flipX = false;
 
     }
 
@@ -248,13 +362,15 @@ public class BotScript : MonoBehaviour
 
         if(col.tag.Equals("Weapon") && state == 0){
 
-            col.gameObject.SendMessage("getEquipped", transform.gameObject);
+            weaponScript = col.gameObject.GetComponent<Weapon>();
+
+            weaponScript.SendMessage("getEquipped", transform.gameObject);
 
             if(!weaponNearEquipped){
 
                 weapon = col.gameObject;
-                col.gameObject.SendMessage("setEquipped", true);
-                col.gameObject.SendMessage("setCharacter", transform.gameObject);
+                weaponScript.setEquipped(true);
+                weaponScript.SetPlayer(this.gameObject);
 
                 state = 1;
 
@@ -284,18 +400,20 @@ public class BotScript : MonoBehaviour
 
         if(target != null) {
 
-            weapon.transform.up = new Vector2(target.transform.position.x - transform.position.x, target.transform.position.y - transform.position.y);
+            weaponScript.transform.up = new Vector2(target.transform.position.x - nt.transform.position.x, target.transform.position.y - nt.transform.position.y);
 
-            angle = -(float) Math.Atan2(target.transform.position.y - transform.position.y, target.transform.position.x - transform.position.x) + 1.55f;
+            angle = -(float) Math.Atan2(target.transform.position.y - nt.transform.position.y, target.transform.position.x - nt.transform.position.x) + 1.55f;
 
-            weapon.SendMessage("FireWeapon");
+            weaponPos = Vector3.zero;
+
+            weaponScript.SendMessage("FireWeapon", new Vector3(target.transform.position.x, target.transform.position.y, 0));
 
         }
 
-        weaponPos.x = (float) (transform.position.x + Math.Sin(angle) * 1);
-        weaponPos.y = (float) (transform.position.y + Math.Cos(angle) * 1);
+        weaponPos.x = (float) (nt.transform.position.x + Math.Sin(angle) * 1);
+        weaponPos.y = (float) (nt.transform.position.y + Math.Cos(angle) * 1);
 
-        weapon.transform.position = weaponPos;
+        weaponScript.transform.position = weaponPos;
 
     }
 
@@ -328,6 +446,15 @@ public class BotScript : MonoBehaviour
             weaponNear = null;
 
         }
+
+    }
+
+    public void setSprite(int s){
+
+        selectedSprite = s;
+
+        spriteIdle = Resources.LoadAll<Sprite>("Sprites/" + selectedSprite + " idle");
+        spriteWalk = Resources.LoadAll<Sprite>("Sprites/" + selectedSprite + " walk");
 
     }
 

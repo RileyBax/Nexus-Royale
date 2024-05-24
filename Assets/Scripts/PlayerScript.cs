@@ -119,10 +119,12 @@ public class PlayerScript : NetworkBehaviour
     public void PickupWeapon(GameObject w)
     {
         Weapon weapon = w.GetComponent<Weapon>();
-        Weapons.PickupWeapon(weapon);
-        weapon.SetPlayer(this.gameObject);
+        if(!weapon.GetEquipped()){
+            Weapons.PickupWeapon(weapon);
+            weapon.SetPlayer(this.gameObject);
 
-        nearbyWeapons.Remove(w);
+            nearbyWeapons.Remove(w);
+        }
     }
 
     public void AddNearbyWeapon(GameObject weapon)
@@ -140,14 +142,17 @@ public class PlayerScript : NetworkBehaviour
     public void updateHealth(int damage){
 
         Health -= damage;
-        if(Health <= 0) Runner.Despawn(this.GetComponent<NetworkObject>());
+        if(Health <= 0) {
+
+            Runner.Despawn(this.GetComponent<NetworkObject>());
+            transform.gameObject.SetActive(false);
+
+        }
 
     }
 
     [Rpc]
     void RpcUpdateSprite(){
-
-        // add walk fix frames
 
         frameTime += Runner.DeltaTime;
 
@@ -182,8 +187,6 @@ public class PlayerScript : NetworkBehaviour
     void RpcUpdateSpriteState(NetInput data){
 
         // Handles animations states
-
-        Debug.Log(data.Velocity);
 
         if(data.Velocity.x == 0.0f && data.Velocity.y == 0.0f) isMoving = false;
         else isMoving = true;

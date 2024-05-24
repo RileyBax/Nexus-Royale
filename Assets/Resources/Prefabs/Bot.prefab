@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 2654527609210782732}
   - component: {fileID: 5616740109871717079}
   - component: {fileID: 1649975598047234916}
+  - component: {fileID: 6272094141218565858}
+  - component: {fileID: -2167699984852394401}
   m_Layer: 3
   m_Name: Bot
   m_TagString: Character
@@ -100,6 +102,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 1649975598047234916}
+  state: 0
+  offsetTimer: 2
+  isMoving: 0
+  up: 0
+  down: 1
+  side: 0
+  sr: {fileID: 1009742651631146162}
+  spriteIdle: []
+  spriteWalk: []
+  nt: {fileID: -2167699984852394401}
 --- !u!61 &5616740109871717079
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -172,3 +184,38 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &6272094141218565858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6437702945300345638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 257918032
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 2654527609210782732}
+  - {fileID: -2167699984852394401}
+--- !u!114 &-2167699984852394401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6437702945300345638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
