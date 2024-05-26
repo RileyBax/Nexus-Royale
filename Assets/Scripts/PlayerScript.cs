@@ -59,6 +59,16 @@ public class PlayerScript : NetworkBehaviour
         {
             CameraFollower.Singleton.SetTarget(camTarget);
             Weapons = new Weapons();
+
+            hud = GameObject.Find("UI");
+            hud.transform.GetChild(0).transform.position = new Vector3(5.2f, -3.5f);
+
+            healthbar = Instantiate(healthbarObject, hud.transform).GetComponentsInChildren<RectTransform>()[1];
+            healthbarLength = 570;
+            healthbar.SetAnchors(0.025f, 0.975f, 0.5f, 0.5f);
+            healthbar.offsetMin = new Vector2(0, healthbar.offsetMin.y);
+            healthbar.offsetMax = new Vector2(0, healthbar.offsetMax.y);
+
         }
 
         spriteIdle = Resources.LoadAll<Sprite>("Sprites/" + selectedSprite + " idle");
@@ -66,14 +76,10 @@ public class PlayerScript : NetworkBehaviour
 
         Health = 100;
 
-        hud = GameObject.Find("UI");
-        //hud.transform.GetChild(0).transform.position = new Vector3(5.2f, -3.5f);
+        
+        
 
-        healthbar = Instantiate(healthbarObject, hud.transform).GetComponentsInChildren<RectTransform>()[1];
-        healthbarLength = 570;
-        healthbar.SetAnchors(0.025f, 0.975f, 0.5f, 0.5f);
-        healthbar.offsetMin = new Vector2(0, healthbar.offsetMin.y);
-        healthbar.offsetMax = new Vector2(0, healthbar.offsetMax.y);
+        
 
     }
 
@@ -136,6 +142,8 @@ public class PlayerScript : NetworkBehaviour
 
     void FixedUpdate(){
 
+        UpdateHealthBar();
+
         if(lastHealth > Health) {
             damageTimer = 1.0f;
         }
@@ -148,8 +156,6 @@ public class PlayerScript : NetworkBehaviour
             transform.gameObject.SetActive(false);
 
         }
-
-        UpdateHealthBar();
 
     }
 
