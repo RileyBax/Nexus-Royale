@@ -31,7 +31,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
             SpawnWeapons();
             // temp spawns below
             SpawnBots();
-            //Runner.Spawn(SMGPrefab, new Vector3(10,10,0));
+            Runner.Spawn(SMGPrefab, new Vector3(10,10,0));
         }
 
     }

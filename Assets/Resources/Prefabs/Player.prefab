@@ -144,6 +144,7 @@ MonoBehaviour:
   down: 1
   side: 0
   deathEmitter: {fileID: 5485862877799509922, guid: 3525af3dec5ee674a8f0d50dbdb7321c, type: 3}
+  healthbarObject: {fileID: 2126824395509010576, guid: 5ece965cc47d2f845a1b2fb8708283ac, type: 3}
 --- !u!114 &4843822125772668117
 MonoBehaviour:
   m_ObjectHideFlags: 0

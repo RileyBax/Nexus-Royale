@@ -1,7 +1,9 @@
 using ExitGames.Client.Photon;
 using Fusion;
+using Fusion.StatsInternal;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
 
@@ -35,6 +37,9 @@ public class PlayerScript : NetworkBehaviour
     private float damageTimer;
     private Color baseColor = new Color(1, 1, 1, 1);
     [SerializeField] NetworkObject deathEmitter;
+    [SerializeField] GameObject healthbarObject;
+    private RectTransform healthbar;
+    private float healthbarLength;
 
     // Start is called before the first frame update
     void Start()
@@ -43,8 +48,6 @@ public class PlayerScript : NetworkBehaviour
         this.nearbyWeapons = new List<GameObject>();
         this.inventoryUI = new UnityEngine.UI.Image[3];
         this.inventory = new GameObject[3];
-
-        hud = GameObject.Find("HUD");
 
         for(int i = 0; i < inventoryUI.Length; i++) inventoryUI[i] = hud.transform.GetChild(0).GetChild(i).GetComponent<UnityEngine.UI.Image>();
         
@@ -62,6 +65,15 @@ public class PlayerScript : NetworkBehaviour
         spriteWalk = Resources.LoadAll<Sprite>("Sprites/" + selectedSprite + " walk");
 
         Health = 100;
+
+        hud = GameObject.Find("UI");
+        //hud.transform.GetChild(0).transform.position = new Vector3(5.2f, -3.5f);
+
+        healthbar = Instantiate(healthbarObject, hud.transform).GetComponentsInChildren<RectTransform>()[1];
+        healthbarLength = 570;
+        healthbar.SetAnchors(0.025f, 0.975f, 0.5f, 0.5f);
+        healthbar.offsetMin = new Vector2(0, healthbar.offsetMin.y);
+        healthbar.offsetMax = new Vector2(0, healthbar.offsetMax.y);
 
     }
 
@@ -136,6 +148,8 @@ public class PlayerScript : NetworkBehaviour
             transform.gameObject.SetActive(false);
 
         }
+
+        UpdateHealthBar();
 
     }
 
@@ -251,6 +265,13 @@ public class PlayerScript : NetworkBehaviour
 
         spriteIdle = Resources.LoadAll<Sprite>("Sprites/" + selectedSprite + " idle");
         spriteWalk = Resources.LoadAll<Sprite>("Sprites/" + selectedSprite + " walk");
+
+    }
+
+    // health bar swaps when a new player joins??????
+    public void UpdateHealthBar(){
+
+        healthbar.offsetMax = new Vector2(-(healthbarLength + (healthbarLength * (Health / -100.0f))), healthbar.offsetMax.y);
 
     }
 
