@@ -137,8 +137,13 @@ MonoBehaviour:
   hud: {fileID: 0}
   camTarget: {fileID: 3589147229896252828}
   sr: {fileID: 7749910632487039352}
-  selectedSprite: 1
-  tempsprites: []
+  spriteIdle: []
+  spriteWalk: []
+  isMoving: 0
+  up: 0
+  down: 1
+  side: 0
+  deathEmitter: {fileID: 5485862877799509922, guid: 3525af3dec5ee674a8f0d50dbdb7321c, type: 3}
 --- !u!114 &4843822125772668117
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -15,7 +15,8 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     private System.Random rand = new System.Random();
 
     [Networked, Capacity(20)] public NetworkDictionary<PlayerRef, PlayerScript> Players => default;
-    public Dictionary<NetworkId, int> Bots = new Dictionary<NetworkId, int>();
+    public Dictionary<NetworkId, int> BotSprite = new Dictionary<NetworkId, int>();
+    public Dictionary<NetworkId, int> PlayerSprite = new Dictionary<NetworkId, int>();
         
     public void Start(){
 
@@ -28,10 +29,10 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         Debug.Log("Spawned");
         if (Runner.IsServer) {
             SpawnWeapons();
-            Runner.Spawn(RiflePrefab, new Vector3(10,10,0));
+            // temp spawns below
+            SpawnBots();
+            //Runner.Spawn(SMGPrefab, new Vector3(10,10,0));
         }
-
-        SpawnBots();
 
     }
 
@@ -41,6 +42,9 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         {
             NetworkObject playerObject = Runner.Spawn(playerPrefab, new Vector3(0,0, 0), Quaternion.identity, player);
             Players.Add(player, playerObject.GetComponent<PlayerScript>());
+            int tempRandom = rand.Next(1, 10);
+            PlayerSprite.Add(playerObject.Id, tempRandom); // replace temprandom with selected sprite from main menu
+            playerObject.SendMessage("setSprite", tempRandom); // here aswell
         }
     }
 
@@ -114,8 +118,8 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         int sprite = rand.Next(1, 10);
 
         NetworkObject botObject = Runner.Spawn(BotPrefab, new Vector3(10, 10, 0));
-        Bots.Add(botObject.Id, sprite);
-        botObject.SendMessage("setSprite", Bots[botObject.Id]);
+        BotSprite.Add(botObject.Id, sprite);
+        botObject.SendMessage("setSprite", BotSprite[botObject.Id]);
 
     }
 

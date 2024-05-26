@@ -79,7 +79,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 0.8423389, b: 0.504717, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -112,6 +112,7 @@ MonoBehaviour:
   spriteIdle: []
   spriteWalk: []
   nt: {fileID: -2167699984852394401}
+  deathEmitter: {fileID: 5485862877799509922, guid: 3525af3dec5ee674a8f0d50dbdb7321c, type: 3}
 --- !u!61 &5616740109871717079
 BoxCollider2D:
   m_ObjectHideFlags: 0

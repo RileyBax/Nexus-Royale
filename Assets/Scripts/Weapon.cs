@@ -16,6 +16,7 @@ public class Weapon : NetworkBehaviour
     protected int Damage = 18;
     protected int Ammo = 30;
     [SerializeField] SpriteRenderer sr;
+    [Networked] bool flip {get; set;}
 
     void Start(){
 
@@ -29,10 +30,17 @@ public class Weapon : NetworkBehaviour
 
         if(Player != null){
 
-            if(transform.position.x - Player.transform.position.x < 0 && !sr.flipY) sr.flipY = true;
-            else if(transform.position.x - Player.transform.position.x > 0 && sr.flipY) sr.flipY = false;
+            if(transform.position.x - Player.transform.position.x < 0 && !sr.flipY) flip = true;
+            else if(transform.position.x - Player.transform.position.x > 0 && sr.flipY) flip = false;
 
         }
+
+    }
+
+    // visual update for clients
+    void FixedUpdate(){
+
+        sr.flipY = flip;
 
     }
 

@@ -14,7 +14,8 @@ public class PlayerScript : NetworkBehaviour
     [SerializeField] private GameObject hud;
     // Camera target (the main camera) reference
     [SerializeField] private Transform camTarget;
-    private int Health = 100;
+    [Networked] private int Health {get; set;}
+    private int lastHealth = 100;
     [SerializeField] SpriteRenderer sr;
 
     // Is the player ready to play
@@ -23,7 +24,7 @@ public class PlayerScript : NetworkBehaviour
     private Rigidbody2D rigidBody;
     [SerializeField] private Sprite[] spriteIdle;
     [SerializeField] private Sprite[] spriteWalk;
-    private int selectedSprite = 1; // 1 - 10
+    [Networked] private int selectedSprite {get; set;} // 1 - 10
     private float frameTime = 0;
     private int frame;
     private int startFrame;
@@ -31,6 +32,9 @@ public class PlayerScript : NetworkBehaviour
     public bool up = false;
     public bool down = true;
     public bool side = false;
+    private float damageTimer;
+    private Color baseColor = new Color(1, 1, 1, 1);
+    [SerializeField] NetworkObject deathEmitter;
 
     // Start is called before the first frame update
     void Start()
@@ -56,6 +60,8 @@ public class PlayerScript : NetworkBehaviour
 
         spriteIdle = Resources.LoadAll<Sprite>("Sprites/" + selectedSprite + " idle");
         spriteWalk = Resources.LoadAll<Sprite>("Sprites/" + selectedSprite + " walk");
+
+        Health = 100;
 
     }
 
@@ -116,12 +122,30 @@ public class PlayerScript : NetworkBehaviour
 
     }
 
+    void FixedUpdate(){
+
+        if(lastHealth > Health) {
+            damageTimer = 1.0f;
+        }
+        lastHealth = Health;
+
+        if(Health <= 0) {
+
+            Instantiate(deathEmitter, this.transform.position, Quaternion.identity);
+            Runner.Despawn(this.GetComponent<NetworkObject>());
+            transform.gameObject.SetActive(false);
+
+        }
+
+    }
+
     public void PickupWeapon(GameObject w)
     {
         Weapon weapon = w.GetComponent<Weapon>();
         if(!weapon.GetEquipped()){
             Weapons.PickupWeapon(weapon);
             weapon.SetPlayer(this.gameObject);
+            weapon.setEquipped(true);
 
             nearbyWeapons.Remove(w);
         }
@@ -142,17 +166,19 @@ public class PlayerScript : NetworkBehaviour
     public void updateHealth(int damage){
 
         Health -= damage;
-        if(Health <= 0) {
-
-            Runner.Despawn(this.GetComponent<NetworkObject>());
-            transform.gameObject.SetActive(false);
-
-        }
 
     }
 
     [Rpc]
     void RpcUpdateSprite(){
+
+        // Visual feed back for health change
+        if(damageTimer > 0.0f) {
+
+            sr.color = baseColor - new Color(0, damageTimer, damageTimer, 0);
+            damageTimer -= Runner.DeltaTime;
+
+        }
 
         frameTime += Runner.DeltaTime;
 
@@ -216,6 +242,15 @@ public class PlayerScript : NetworkBehaviour
 
         if(data.Velocity.x <= -1 && sr.flipX != true) sr.flipX = true;
         else if(data.Velocity.x >= 1 && sr.flipX != false) sr.flipX = false;
+
+    }
+
+    public void setSprite(int s){
+
+        selectedSprite = s;
+
+        spriteIdle = Resources.LoadAll<Sprite>("Sprites/" + selectedSprite + " idle");
+        spriteWalk = Resources.LoadAll<Sprite>("Sprites/" + selectedSprite + " walk");
 
     }
 

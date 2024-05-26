@@ -18,7 +18,8 @@ public class BotScript : NetworkBehaviour
     private float directionTimer = 0.0f;
     private System.Random rand = new System.Random();
     public int state = 0; // 0 = searching for weapon, 1 = has weapon searching for player, 2 = attacking player
-    private int health = 100;
+    [Networked] private int Health {get; set;}
+    private int lastHealth = 100;
     private Collider2D[] hitColliders;
     private GameObject target;
     private Vector2 zone;
@@ -41,6 +42,10 @@ public class BotScript : NetworkBehaviour
     private Vector2 lastPos;
     private float lastPosTimer = 0.1f;
     [SerializeField] private NetworkTransform nt;
+    private float damageTimer;
+    private Color baseColor = new Color(1, 1, 1, 1);
+    [SerializeField] NetworkObject deathEmitter;
+    private bool alive = true;
 
     // Start is called before the first frame update
     public override void Spawned()
@@ -51,6 +56,8 @@ public class BotScript : NetworkBehaviour
 
         spriteIdle = Resources.LoadAll<Sprite>("Sprites/" + selectedSprite + " idle");
         spriteWalk = Resources.LoadAll<Sprite>("Sprites/" + selectedSprite + " walk");
+
+        Health = 100;
 
     }
 
@@ -259,8 +266,15 @@ public class BotScript : NetworkBehaviour
         }
         else lastPosTimer -= Runner.DeltaTime;
 
+        if(lastHealth > Health) {
+            damageTimer = 1.0f;
+        }
+        lastHealth = Health;
+
+
     }
 
+    // Runs visuals client sided
     void FixedUpdate(){
 
         moveDir = new Vector2(movePoint.x - transform.position.x, movePoint.y - transform.position.y).normalized;
@@ -279,10 +293,33 @@ public class BotScript : NetworkBehaviour
         }
         else lastPosTimer -= Runner.DeltaTime;
 
+        if(lastHealth > Health) {
+            damageTimer = 1.0f;
+        }
+        lastHealth = Health;
+
+        if(Health <= 0 && alive){
+
+            Instantiate(deathEmitter, this.nt.transform.position, Quaternion.identity);
+            Runner.Despawn(this.GetComponent<NetworkObject>());
+            transform.gameObject.SetActive(false);
+
+            alive = false;
+
+        }
+
     }
 
     [Rpc]
     void RpcUpdateSprite(){
+
+        // Visual feed back for health change
+        if(damageTimer > 0.0f) {
+
+            sr.color = baseColor - new Color(0, damageTimer, damageTimer, 0);
+            damageTimer -= Runner.DeltaTime;
+
+        }
 
         frameTime += Runner.DeltaTime;
 
@@ -420,11 +457,9 @@ public class BotScript : NetworkBehaviour
     // Updates health, called from bullets script
     void updateHealth(int damage){
 
-        health -= damage;
+        Health -= damage;
 
-        if(health <= 0) {
-
-            transform.gameObject.SetActive(false);
+        if(Health <= 0) {
             
             if(weapon != null) {
 
@@ -434,6 +469,8 @@ public class BotScript : NetworkBehaviour
             }
             
         }
+
+        //if(damage > 0) damageTimer = 1f;
 
     }
 
