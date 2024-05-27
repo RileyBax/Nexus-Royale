@@ -17,6 +17,8 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     [Networked, Capacity(20)] public NetworkDictionary<PlayerRef, PlayerScript> Players => default;
     public Dictionary<NetworkId, int> BotSprite = new Dictionary<NetworkId, int>();
     public Dictionary<NetworkId, int> PlayerSprite = new Dictionary<NetworkId, int>();
+    [Networked] private float timer {get; set;}
+    private bool gameStarted = false;
         
     public void Start(){
 
@@ -26,13 +28,8 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
     public override void Spawned()
     {
+        timer = 20.0f;
         Debug.Log("Spawned");
-        if (Runner.IsServer) {
-            SpawnWeapons();
-            // temp spawns below
-            SpawnBots();
-            //Runner.Spawn(SMGPrefab, new Vector3(10,10,0));
-        }
 
     }
 
@@ -45,6 +42,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
             int tempRandom = rand.Next(1, 10);
             PlayerSprite.Add(playerObject.Id, tempRandom); // replace temprandom with selected sprite from main menu
             playerObject.SendMessage("setSprite", tempRandom); // here aswell
+            playerObject.SendMessage("setTimer", timer);
         }
     }
 
@@ -115,11 +113,84 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
     private void SpawnBots(){
 
-        int sprite = rand.Next(1, 10);
+        Tilemap.CompressBounds();
+        Vector3 tilemapSize = Tilemap.size;
+        int x1 = -(int)(tilemapSize.x / 2);
+        int x2 = (int)(tilemapSize.x / 2);
+        int y1 = -(int)(tilemapSize.y / 2);
+        int y2 = (int)(tilemapSize.y / 2);
 
-        NetworkObject botObject = Runner.Spawn(BotPrefab, new Vector3(10, 10, 0));
-        BotSprite.Add(botObject.Id, sprite);
-        botObject.SendMessage("setSprite", BotSprite[botObject.Id]);
+        int spawned = 0;
+        int max = 20 - Players.Count;
+
+        while(spawned < max){
+
+            var position = new Vector3(Random.Range(x1, x2), Random.Range(y1, y2));
+
+            if (!Physics.CheckBox(position, new Vector3(1, 1, 1))){
+
+                int sprite = rand.Next(1, 10);
+
+                NetworkObject botObject = Runner.Spawn(BotPrefab, position);
+                BotSprite.Add(botObject.Id, sprite);
+                botObject.SendMessage("setSprite", BotSprite[botObject.Id]);
+
+                spawned++;
+
+            }
+
+        }
+
+    }
+
+    public override void FixedUpdateNetwork()
+    {
+        
+        timer -= Runner.DeltaTime;
+
+        if(timer <= 0.0f && !gameStarted) {
+            gameStarted = true;
+            RpcStartGame();
+        }
+
+    }
+
+    [Rpc]
+    public void RpcStartGame(){
+
+        // Randomize all player positions
+        // Spawn remainer empty spaces with bots
+
+        Tilemap.CompressBounds();
+        Vector3 tilemapSize = Tilemap.size;
+        int x1 = -(int)(tilemapSize.x / 2);
+        int x2 = (int)(tilemapSize.x / 2);
+        int y1 = -(int)(tilemapSize.y / 2);
+        int y2 = (int)(tilemapSize.y / 2);
+
+        foreach(KeyValuePair<PlayerRef, PlayerScript> p in Players){
+
+            int spawned = 0;
+
+            while(spawned < 1){
+
+                var position = new Vector3(Random.Range(x1, x2), Random.Range(y1, y2));
+
+                if (!Physics.CheckBox(position, new Vector3(1, 1, 1))){
+
+                    p.Value.transform.position = position;
+                    spawned++;
+
+                }
+
+            }
+
+        }
+
+        if (Runner.IsServer) {
+            SpawnWeapons();
+            SpawnBots();
+        }
 
     }
 

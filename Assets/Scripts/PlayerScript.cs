@@ -27,6 +27,7 @@ public class PlayerScript : NetworkBehaviour
     [SerializeField] private Sprite[] spriteIdle;
     [SerializeField] private Sprite[] spriteWalk;
     [Networked] private int selectedSprite {get; set;} // 1 - 10
+    [Networked] private float timer {get; set;}
     private float frameTime = 0;
     private int frame;
     private int startFrame;
@@ -38,18 +39,16 @@ public class PlayerScript : NetworkBehaviour
     private Color baseColor = new Color(1, 1, 1, 1);
     [SerializeField] NetworkObject deathEmitter;
     [SerializeField] GameObject healthbarObject;
+    [SerializeField] GameObject LobbyTimerObject;
     private RectTransform healthbar;
     private float healthbarLength;
+    private LobbyTimerScript lobbyTimerScript;
 
     // Start is called before the first frame update
     void Start()
     {
 
-        this.nearbyWeapons = new List<GameObject>();
-        this.inventoryUI = new UnityEngine.UI.Image[3];
-        this.inventory = new GameObject[3];
-
-        for(int i = 0; i < inventoryUI.Length; i++) inventoryUI[i] = hud.transform.GetChild(0).GetChild(i).GetComponent<UnityEngine.UI.Image>();
+        
         
     }
 
@@ -57,11 +56,17 @@ public class PlayerScript : NetworkBehaviour
     {
         if (HasInputAuthority)
         {
+
+            this.nearbyWeapons = new List<GameObject>();
+            this.inventoryUI = new UnityEngine.UI.Image[3];
+            this.inventory = new GameObject[3];
+
             CameraFollower.Singleton.SetTarget(camTarget);
             Weapons = new Weapons();
 
             hud = GameObject.Find("UI");
             hud.transform.GetChild(0).transform.position = new Vector3(5.2f, -3.5f);
+            for(int i = 0; i < inventoryUI.Length; i++) inventoryUI[i] = hud.transform.GetChild(0).GetChild(i).GetComponent<UnityEngine.UI.Image>();
 
             healthbar = Instantiate(healthbarObject, hud.transform).GetComponentsInChildren<RectTransform>()[1];
             healthbarLength = 570;
@@ -69,17 +74,21 @@ public class PlayerScript : NetworkBehaviour
             healthbar.offsetMin = new Vector2(0, healthbar.offsetMin.y);
             healthbar.offsetMax = new Vector2(0, healthbar.offsetMax.y);
 
+            lobbyTimerScript = Instantiate(LobbyTimerObject, hud.transform).GetComponent<LobbyTimerScript>();
+
+            // fixed ping text
+            hud.transform.GetChild(1).GetComponent<TextMeshProUGUI>().fontSize = 64;
+            hud.transform.GetChild(1).GetComponent<TextMeshProUGUI>().fontStyle = FontStyles.Bold;
+            // fix position too
+
         }
 
         spriteIdle = Resources.LoadAll<Sprite>("Sprites/" + selectedSprite + " idle");
         spriteWalk = Resources.LoadAll<Sprite>("Sprites/" + selectedSprite + " walk");
 
+        setTimer(timer);
+
         Health = 100;
-
-        
-        
-
-        
 
     }
 
@@ -133,7 +142,7 @@ public class PlayerScript : NetworkBehaviour
         if (hud != null)
         {
 
-        hud.transform.GetChild(1).GetComponent<TMP_Text>().text = ping.ToString();
+        hud.transform.GetChild(1).GetComponent<TMP_Text>().text = ping.ToString("0");
         }
 
         RpcUpdateSprite();
@@ -274,10 +283,17 @@ public class PlayerScript : NetworkBehaviour
 
     }
 
-    // health bar swaps when a new player joins??????
     public void UpdateHealthBar(){
 
-        healthbar.offsetMax = new Vector2(-(healthbarLength + (healthbarLength * (Health / -100.0f))), healthbar.offsetMax.y);
+        if(healthbar != null) healthbar.offsetMax = new Vector2(-(healthbarLength + (healthbarLength * (Health / -100.0f))), healthbar.offsetMax.y);
+
+    }
+
+    public void setTimer(float t){
+
+        if(timer < 60) timer = t - 4;
+        else timer = t;
+        if(lobbyTimerScript != null) lobbyTimerScript.timer = t;
 
     }
 

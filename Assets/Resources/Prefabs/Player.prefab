@@ -145,6 +145,7 @@ MonoBehaviour:
   side: 0
   deathEmitter: {fileID: 5485862877799509922, guid: 3525af3dec5ee674a8f0d50dbdb7321c, type: 3}
   healthbarObject: {fileID: 2126824395509010576, guid: 5ece965cc47d2f845a1b2fb8708283ac, type: 3}
+  LobbyTimerObject: {fileID: 8694703185643491051, guid: 2e795e8f37b964d48865fc830df040ce, type: 3}
 --- !u!114 &4843822125772668117
 MonoBehaviour:
   m_ObjectHideFlags: 0
