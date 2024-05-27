@@ -28,7 +28,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
     public override void Spawned()
     {
-        timer = 20.0f;
+        timer = 60.0f;
         Debug.Log("Spawned");
 
     }
@@ -42,7 +42,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
             int tempRandom = rand.Next(1, 10);
             PlayerSprite.Add(playerObject.Id, tempRandom); // replace temprandom with selected sprite from main menu
             playerObject.SendMessage("setSprite", tempRandom); // here aswell
-            playerObject.SendMessage("setTimer", timer);
+            playerObject.SendMessage("setTimer", timer - 2);
         }
     }
 

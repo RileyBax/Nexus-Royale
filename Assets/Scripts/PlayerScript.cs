@@ -79,7 +79,7 @@ public class PlayerScript : NetworkBehaviour
             // fixed ping text
             hud.transform.GetChild(1).GetComponent<TextMeshProUGUI>().fontSize = 64;
             hud.transform.GetChild(1).GetComponent<TextMeshProUGUI>().fontStyle = FontStyles.Bold;
-            // fix position too
+            // fix position too make look less jittery
 
         }
 

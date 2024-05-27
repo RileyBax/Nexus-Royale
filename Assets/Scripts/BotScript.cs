@@ -5,7 +5,7 @@ using UnityEngine;
 public class BotScript : NetworkBehaviour
 {
 
-    private GameObject weaponNear;
+    public GameObject weaponNear;
     private GameObject weapon;
     private Weapon weaponScript;
     private Vector3 weaponPos;
@@ -24,7 +24,7 @@ public class BotScript : NetworkBehaviour
     private GameObject target;
     private Vector2 zone;
     private float wanderAngle;
-    private float waitTimer;
+    public float waitTimer;
     public float offsetTimer = 2.0f;
     private int offset;
     private Vector2 moveDir;
@@ -69,7 +69,7 @@ public class BotScript : NetworkBehaviour
             if(weaponNear == null){
                 
                 // Check for weapon in circle around character
-                hitColliders = Physics2D.OverlapCircleAll(transform.position, 10);
+                hitColliders = Physics2D.OverlapCircleAll(transform.position, 20);
                 
                 for(int i = 0; i < hitColliders.Length; i++){
 
@@ -87,7 +87,7 @@ public class BotScript : NetworkBehaviour
 
             }
             // Changes direction the bot is moving in, stops bot jittering
-            else if(directionTimer <= 0.0f){
+            else if(Vector3.Distance(movePoint, transform.position) < 0.1f || directionTimer <= 0.0f){
 
                 directionTimer = (float) rand.NextDouble();
 
@@ -123,7 +123,7 @@ public class BotScript : NetworkBehaviour
             }
 
             // TODO: Make bot wander to center of zone if it cant find a weapon
-            if(target == null && Vector3.Distance(movePoint, transform.position) < 0.1f && waitTimer <= 0.0f){
+            if(weaponNear == null && Vector3.Distance(movePoint, transform.position) < 0.1f || waitTimer <= 0.0f){
 
                 // change this to pick one of 8 45 deg angles to walk in
                 // -------------------------------------------------------------------------------
@@ -174,7 +174,7 @@ public class BotScript : NetworkBehaviour
             }
 
             // If target not found, wander towards center of zone
-            if(target == null && Vector3.Distance(movePoint, transform.position) < 0.1f && waitTimer <= 0.0f){
+            if(target == null && Vector3.Distance(movePoint, transform.position) < 0.1f || waitTimer <= 0.0f){
 
                 // change this to pick one of 8 45 deg angles to walk in
                 // -------------------------------------------------------------------------------
@@ -200,7 +200,7 @@ public class BotScript : NetworkBehaviour
 
             }
             else if(Vector3.Distance(movePoint, transform.position) < 0.1f && waitTimer > 0.0f) movePoint = transform.position;
-            waitTimer -= Time.deltaTime;
+            waitTimer -= Runner.DeltaTime;
             
             updateWeapon();
             hasWeaponCheck();
@@ -270,7 +270,6 @@ public class BotScript : NetworkBehaviour
             damageTimer = 1.0f;
         }
         lastHealth = Health;
-
 
     }
 
@@ -425,8 +424,8 @@ public class BotScript : NetworkBehaviour
         }
 
         if(col.gameObject.tag.Equals("Object") || col.gameObject.tag.Equals("Water")){
-            movePoint.x = (float) (transform.position.x + Math.Sin(moveAngle += 0.1f * offset) * 5);
-            movePoint.y = (float) (transform.position.y + Math.Cos(moveAngle += 0.1f * offset) * 5);
+            movePoint.x = (float) (transform.position.x + Math.Sin(moveAngle += 0.2f * offset) * 5);
+            movePoint.y = (float) (transform.position.y + Math.Cos(moveAngle += 0.2f * offset) * 5);
         }
 
         offsetTimer -= Time.deltaTime;
@@ -464,7 +463,7 @@ public class BotScript : NetworkBehaviour
             if(weapon != null) {
 
                 weapon.SendMessage("setEquipped", false);
-                weapon.SendMessage("setCharacterNull");
+                weapon.SendMessage("RemovePlayer");
 
             }
             
