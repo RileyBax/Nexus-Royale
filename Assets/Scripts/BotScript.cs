@@ -46,6 +46,8 @@ public class BotScript : NetworkBehaviour
     private Color baseColor = new Color(1, 1, 1, 1);
     [SerializeField] NetworkObject deathEmitter;
     private bool alive = true;
+    private float zoneDamageTimer = 2.0f;
+    private bool insideZone = true;
 
     // Start is called before the first frame update
     public override void Spawned()
@@ -254,8 +256,8 @@ public class BotScript : NetworkBehaviour
 
         rb.MovePosition(rb.position + moveDir * Runner.DeltaTime * 10);
 
-        RpcUpdateSpriteState();
-        RpcUpdateSprite();
+        UpdateSpriteState();
+        UpdateSprite();
 
         if(lastPosTimer <= 0.0f){
 
@@ -271,6 +273,14 @@ public class BotScript : NetworkBehaviour
         }
         lastHealth = Health;
 
+        if(!insideZone && zoneDamageTimer <= 0.0f){
+
+            zoneDamageTimer = 2.0f;
+            updateHealth(10);
+
+        }
+        else if(!insideZone && zoneDamageTimer > 0.0f) zoneDamageTimer -= Time.deltaTime;
+
     }
 
     // Runs visuals client sided
@@ -280,8 +290,8 @@ public class BotScript : NetworkBehaviour
 
         rb.MovePosition(rb.position + moveDir * Runner.DeltaTime * 10);
 
-        RpcUpdateSpriteState();
-        RpcUpdateSprite();
+        UpdateSpriteState();
+        UpdateSprite();
 
         if(lastPosTimer <= 0.0f){
 
@@ -307,10 +317,17 @@ public class BotScript : NetworkBehaviour
 
         }
 
+        if(!insideZone && zoneDamageTimer <= 0.0f){
+
+            zoneDamageTimer = 2.0f;
+            updateHealth(10);
+
+        }
+        else if(!insideZone && zoneDamageTimer > 0.0f) zoneDamageTimer -= Time.deltaTime;
+
     }
 
-    [Rpc]
-    void RpcUpdateSprite(){
+    void UpdateSprite(){
 
         // Visual feed back for health change
         if(damageTimer > 0.0f) {
@@ -349,8 +366,7 @@ public class BotScript : NetworkBehaviour
 
     }
 
-    [Rpc]
-    void RpcUpdateSpriteState(){
+    void UpdateSpriteState(){
 
         // Handles animations states
         moveDir = ((Vector2) nt.transform.position - lastPos) * 5;
@@ -413,6 +429,14 @@ public class BotScript : NetworkBehaviour
             }
 
         }
+
+        if(col.tag.Equals("Game Manager")) insideZone = true;
+
+    }
+
+    void OnTriggerExit2D(Collider2D col){
+
+        if(col.tag.Equals("Game Manager")) insideZone = false;
 
     }
 
@@ -491,6 +515,12 @@ public class BotScript : NetworkBehaviour
 
         spriteIdle = Resources.LoadAll<Sprite>("Sprites/" + selectedSprite + " idle");
         spriteWalk = Resources.LoadAll<Sprite>("Sprites/" + selectedSprite + " walk");
+
+    }
+
+    public void setZone(Vector2 z){
+
+        zone = z;
 
     }
 

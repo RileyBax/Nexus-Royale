@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using Fusion;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -19,17 +21,51 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     public Dictionary<NetworkId, int> PlayerSprite = new Dictionary<NetworkId, int>();
     [Networked] private float timer {get; set;}
     private bool gameStarted = false;
+    [SerializeField] private LineRenderer lr;
+    [SerializeField] private PolygonCollider2D zoneCollider;
+    private int circlePoints = 60;
+    [Networked] private float radius {get; set;}
+    private Vector3 circlePointPos;
+    [Networked] private Vector3 zone {get; set;}
+    private float width = 0.25f;
+    private Vector2[] colliderPoints;
         
     public void Start(){
 
         BotPrefab = Resources.Load<NetworkObject>("Prefabs/Bot");
+        lr = this.AddComponent<LineRenderer>();
+        zoneCollider = this.AddComponent<PolygonCollider2D>();
+
+        lr.positionCount = circlePoints;
+        lr.startWidth = width;
+        lr.endWidth = width;
+        lr.startColor = Color.white;
+        lr.material = new Material (Shader.Find ("Sprites/Default"));
+        lr.material.color = Color.white; 
+        lr.loop = true;
+        lr.sortingOrder = 1;
+
+        colliderPoints = new Vector2[circlePoints];
+
+        this.transform.position -= new Vector3(0,0,-5);
+
+        zoneCollider.isTrigger = true;
+
+        this.tag = "Game Manager";
+
+        timer = 60.0f;
+
+        radius = 400.0f;
 
     }
 
     public override void Spawned()
     {
         timer = 60.0f;
+        radius = 400.0f;
         Debug.Log("Spawned");
+
+        zone = new Vector3(UnityEngine.Random.Range(-100, 100), UnityEngine.Random.Range(-100, 100), 0);
 
     }
 
@@ -40,7 +76,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
             NetworkObject playerObject = Runner.Spawn(playerPrefab, new Vector3(0,0, 0), Quaternion.identity, player);
             Players.Add(player, playerObject.GetComponent<PlayerScript>());
             int tempRandom = rand.Next(1, 10);
-            PlayerSprite.Add(playerObject.Id, tempRandom); // replace temprandom with selected sprite from main menu
+            PlayerSprite.Add(playerObject.Id, tempRandom); // replace tempUnityEngine.Random with selected sprite from main menu
             playerObject.SendMessage("setSprite", tempRandom); // here aswell
             playerObject.SendMessage("setTimer", timer - 2);
         }
@@ -74,7 +110,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
         while (spawned < maxRifles)
         {
-            var position = new Vector3(Random.Range(x1, x2), Random.Range(y1, y2));
+            var position = new Vector3(UnityEngine.Random.Range(x1, x2), UnityEngine.Random.Range(y1, y2));
 
             if (!Physics.CheckBox(position, new Vector3(1,1,1)))
             {
@@ -87,7 +123,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
         while (spawned < maxShotguns)
         {
-            var position = new Vector3(Random.Range(x1, x2), Random.Range(y1, y2));
+            var position = new Vector3(UnityEngine.Random.Range(x1, x2), UnityEngine.Random.Range(y1, y2));
 
             if (!Physics.CheckBox(position, new Vector3(1, 1, 1)))
             {
@@ -100,7 +136,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
         while (spawned < maxSMGs)
         {
-            var position = new Vector3(Random.Range(x1, x2), Random.Range(y1, y2));
+            var position = new Vector3(UnityEngine.Random.Range(x1, x2), UnityEngine.Random.Range(y1, y2));
 
             if (!Physics.CheckBox(position, new Vector3(1, 1, 1)))
             {
@@ -125,7 +161,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
         while(spawned < max){
 
-            var position = new Vector3(Random.Range(x1, x2), Random.Range(y1, y2));
+            var position = new Vector3(UnityEngine.Random.Range(x1, x2), UnityEngine.Random.Range(y1, y2));
 
             if (!Physics.CheckBox(position, new Vector3(1, 1, 1))){
 
@@ -134,6 +170,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
                 NetworkObject botObject = Runner.Spawn(BotPrefab, position);
                 BotSprite.Add(botObject.Id, sprite);
                 botObject.SendMessage("setSprite", BotSprite[botObject.Id]);
+                botObject.SendMessage("setZone", (Vector2) zone);
 
                 spawned++;
 
@@ -153,12 +190,50 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
             RpcStartGame();
         }
 
+
+        for(int i = 0; i < circlePoints; i++){
+
+            circlePointPos.x = (float)(zone.x + Math.Sin((2 * Math.PI) / circlePoints * i + 1) * radius);
+            circlePointPos.y = (float)(zone.y + Math.Cos((2 * Math.PI) / circlePoints * i + 1) * radius);
+
+            lr.SetPosition(i, circlePointPos);
+
+            colliderPoints[i] = new Vector2(circlePointPos.x, circlePointPos.y) - (Vector2) zone;
+
+        }
+
+        zoneCollider.SetPath(0, colliderPoints);
+
+    }
+
+    void FixedUpdate(){
+
+        if(radius >= 10) radius -= Runner.DeltaTime;
+
+        if(timer <= 0.0f && !gameStarted) {
+            gameStarted = true;
+            RpcStartGame();
+        }
+
+        for(int i = 0; i < circlePoints; i++){
+
+            circlePointPos.x = (float)(zone.x + Math.Sin((2 * Math.PI) / circlePoints * i + 1) * radius);
+            circlePointPos.y = (float)(zone.y + Math.Cos((2 * Math.PI) / circlePoints * i + 1) * radius);
+
+            lr.SetPosition(i, circlePointPos);
+
+            colliderPoints[i] = new Vector2(circlePointPos.x, circlePointPos.y) - (Vector2) zone;
+
+        }
+
+        zoneCollider.SetPath(0, colliderPoints);
+
     }
 
     [Rpc]
     public void RpcStartGame(){
 
-        // Randomize all player positions
+        // UnityEngine.Randomize all player positions
         // Spawn remainer empty spaces with bots
 
         Tilemap.CompressBounds();
@@ -174,7 +249,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
             while(spawned < 1){
 
-                var position = new Vector3(Random.Range(x1, x2), Random.Range(y1, y2));
+                var position = new Vector3(UnityEngine.Random.Range(x1, x2), UnityEngine.Random.Range(y1, y2));
 
                 if (!Physics.CheckBox(position, new Vector3(1, 1, 1))){
 
@@ -191,6 +266,8 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
             SpawnWeapons();
             SpawnBots();
         }
+
+        transform.position = zone;
 
     }
 

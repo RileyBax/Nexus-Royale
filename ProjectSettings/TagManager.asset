@@ -9,6 +9,7 @@ TagManager:
   - Character
   - Object
   - Water
+  - Game Manager
   layers:
   - Default
   - TransparentFX

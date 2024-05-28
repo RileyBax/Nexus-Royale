@@ -47,6 +47,8 @@ public class PlayerScript : NetworkBehaviour
     private GameObject minimap;
     [SerializeField] GameObject minimapCamObject;
     private GameObject minimapCam;
+    private float zoneDamageTimer = 2.0f;
+    private bool insideZone = true;
 
     // Start is called before the first frame update
     void Start()
@@ -174,7 +176,15 @@ public class PlayerScript : NetworkBehaviour
 
         }
 
-        minimapCam.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
+        if(minimapCam != null) minimapCam.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
+
+        if(!insideZone && zoneDamageTimer <= 0.0f){
+
+            zoneDamageTimer = 2.0f;
+            updateHealth(10);
+
+        }
+        else if(!insideZone && zoneDamageTimer > 0.0f) zoneDamageTimer -= Time.deltaTime;
 
     }
 
@@ -304,6 +314,18 @@ public class PlayerScript : NetworkBehaviour
         if(timer < 60) timer = t - 4;
         else timer = t;
         if(lobbyTimerScript != null) lobbyTimerScript.timer = t;
+
+    }
+
+    void OnTriggerEnter2D(Collider2D col){
+
+        if(col.tag.Equals("Game Manager")) insideZone = true;
+
+    }
+
+    void OnTriggerExit2D(Collider2D col){
+
+        if(col.tag.Equals("Game Manager")) insideZone = false;
 
     }
 
