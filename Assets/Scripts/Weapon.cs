@@ -80,6 +80,7 @@ public class Weapon : NetworkBehaviour
     public void SetVisible(bool visible)
     {
         this.gameObject.SetActive(visible);
+        sr.enabled = visible;
     }
 
     public void setEquipped(bool e)
