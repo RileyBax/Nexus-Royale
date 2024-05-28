@@ -43,6 +43,10 @@ public class PlayerScript : NetworkBehaviour
     private RectTransform healthbar;
     private float healthbarLength;
     private LobbyTimerScript lobbyTimerScript;
+    [SerializeField] GameObject minimapObject;
+    private GameObject minimap;
+    [SerializeField] GameObject minimapCamObject;
+    private GameObject minimapCam;
 
     // Start is called before the first frame update
     void Start()
@@ -80,6 +84,10 @@ public class PlayerScript : NetworkBehaviour
             hud.transform.GetChild(1).GetComponent<TextMeshProUGUI>().fontSize = 64;
             hud.transform.GetChild(1).GetComponent<TextMeshProUGUI>().fontStyle = FontStyles.Bold;
             // fix position too make look less jittery
+
+            minimap = Instantiate(minimapObject, hud.transform);
+
+            minimapCam = Instantiate(minimapCamObject);
 
         }
 
@@ -165,6 +173,8 @@ public class PlayerScript : NetworkBehaviour
             transform.gameObject.SetActive(false);
 
         }
+
+        minimapCam.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
 
     }
 

@@ -146,6 +146,8 @@ MonoBehaviour:
   deathEmitter: {fileID: 5485862877799509922, guid: 3525af3dec5ee674a8f0d50dbdb7321c, type: 3}
   healthbarObject: {fileID: 2126824395509010576, guid: 5ece965cc47d2f845a1b2fb8708283ac, type: 3}
   LobbyTimerObject: {fileID: 8694703185643491051, guid: 2e795e8f37b964d48865fc830df040ce, type: 3}
+  minimapObject: {fileID: 6406182515797479501, guid: c2ecf59e1c12a954e8d1833345485f48, type: 3}
+  minimapCamObject: {fileID: 7467466142400410273, guid: e42ea6254298be640aef54b27e2b2350, type: 3}
 --- !u!114 &4843822125772668117
 MonoBehaviour:
   m_ObjectHideFlags: 0
