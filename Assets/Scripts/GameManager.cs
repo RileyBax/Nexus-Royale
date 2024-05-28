@@ -79,6 +79,8 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
             PlayerSprite.Add(playerObject.Id, tempRandom); // replace tempUnityEngine.Random with selected sprite from main menu
             playerObject.SendMessage("setSprite", tempRandom); // here aswell
             playerObject.SendMessage("setTimer", timer - 2);
+            playerObject.SendMessage("setZone", (Vector2) zone);
+            
         }
     }
 
@@ -203,6 +205,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         }
 
         zoneCollider.SetPath(0, colliderPoints);
+        zoneCollider.transform.position = this.transform.position;
 
     }
 
@@ -227,6 +230,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         }
 
         zoneCollider.SetPath(0, colliderPoints);
+        transform.position = zone;
 
     }
 

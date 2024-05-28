@@ -49,6 +49,10 @@ public class PlayerScript : NetworkBehaviour
     private GameObject minimapCam;
     private float zoneDamageTimer = 2.0f;
     private bool insideZone = true;
+    [SerializeField] GameObject arrowObject;
+    private ArrowScript arrow;
+    [Networked] private Vector2 zone {get;set;}
+    private Weapon weapon;
 
     // Start is called before the first frame update
     void Start()
@@ -82,14 +86,17 @@ public class PlayerScript : NetworkBehaviour
 
             lobbyTimerScript = Instantiate(LobbyTimerObject, hud.transform).GetComponent<LobbyTimerScript>();
 
-            // fixed ping text
-            hud.transform.GetChild(1).GetComponent<TextMeshProUGUI>().fontSize = 64;
+            hud.transform.GetChild(1).GetComponent<TextMeshProUGUI>().fontSize = 32;
             hud.transform.GetChild(1).GetComponent<TextMeshProUGUI>().fontStyle = FontStyles.Bold;
-            // fix position too make look less jittery
+            hud.transform.GetChild(1).GetComponent<TextMeshProUGUI>().alignment = TextAlignmentOptions.Right;
 
             minimap = Instantiate(minimapObject, hud.transform);
 
             minimapCam = Instantiate(minimapCamObject);
+
+            // arrow doesnt look good but works, is very jittery to host
+            arrow = Instantiate(arrowObject).GetComponent<ArrowScript>();
+            arrow.zone = zone;
 
         }
 
@@ -123,7 +130,7 @@ public class PlayerScript : NetworkBehaviour
                 PickupWeapon(nearbyWeapons[0]);
             }
 
-            Weapon weapon = Weapons.GetSelectedWeapon();
+            if(Weapons != null) weapon = Weapons.GetSelectedWeapon();
             if (weapon != null)
             {
                 Rigidbody2D rb = weapon.GetComponent<Rigidbody2D>();
@@ -152,7 +159,7 @@ public class PlayerScript : NetworkBehaviour
         if (hud != null)
         {
 
-        hud.transform.GetChild(1).GetComponent<TMP_Text>().text = ping.ToString("0");
+        hud.transform.GetChild(1).GetComponent<TMP_Text>().text = ping.ToString("0") + "ms";
         }
 
         RpcUpdateSprite();
@@ -185,6 +192,12 @@ public class PlayerScript : NetworkBehaviour
 
         }
         else if(!insideZone && zoneDamageTimer > 0.0f) zoneDamageTimer -= Time.deltaTime;
+
+    }
+
+    void Update(){
+
+        if(arrow != null) arrow.playerPos = transform.position;
 
     }
 
@@ -326,6 +339,18 @@ public class PlayerScript : NetworkBehaviour
     void OnTriggerExit2D(Collider2D col){
 
         if(col.tag.Equals("Game Manager")) insideZone = false;
+
+    }
+
+    void setZone(Vector2 z){
+
+        try{
+            zone = z;
+            arrow.zone = zone;
+        }
+        catch(Exception e) {
+            Debug.Log(e);
+        }
 
     }
 

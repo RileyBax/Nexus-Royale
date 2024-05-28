@@ -148,6 +148,7 @@ MonoBehaviour:
   LobbyTimerObject: {fileID: 8694703185643491051, guid: 2e795e8f37b964d48865fc830df040ce, type: 3}
   minimapObject: {fileID: 6406182515797479501, guid: c2ecf59e1c12a954e8d1833345485f48, type: 3}
   minimapCamObject: {fileID: 7467466142400410273, guid: e42ea6254298be640aef54b27e2b2350, type: 3}
+  arrowObject: {fileID: 2109670612580053210, guid: e1a77546841d09f45b365e79ec63f892, type: 3}
 --- !u!114 &4843822125772668117
 MonoBehaviour:
   m_ObjectHideFlags: 0
