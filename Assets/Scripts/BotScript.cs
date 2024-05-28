@@ -466,7 +466,7 @@ public class BotScript : NetworkBehaviour
 
             weaponPos = Vector3.zero;
 
-            weaponScript.SendMessage("FireWeapon", new Vector3(target.transform.position.x, target.transform.position.y, 0));
+            if(Vector3.Distance(transform.position, target.transform.position) < 10) weaponScript.SendMessage("FireWeapon", new Vector3(target.transform.position.x, target.transform.position.y, 0));
 
         }
 

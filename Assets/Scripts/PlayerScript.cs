@@ -52,7 +52,6 @@ public class PlayerScript : NetworkBehaviour
     [SerializeField] GameObject arrowObject;
     private ArrowScript arrow;
     [Networked] private Vector2 zone {get;set;}
-    private Weapon weapon;
 
     // Start is called before the first frame update
     void Start()
@@ -64,15 +63,16 @@ public class PlayerScript : NetworkBehaviour
 
     public override void Spawned()
     {
+        Weapons = new Weapons();
+
+        this.nearbyWeapons = new List<GameObject>();
+        this.inventoryUI = new UnityEngine.UI.Image[3];
+        this.inventory = new GameObject[3];
+
         if (HasInputAuthority)
         {
 
-            this.nearbyWeapons = new List<GameObject>();
-            this.inventoryUI = new UnityEngine.UI.Image[3];
-            this.inventory = new GameObject[3];
-
             CameraFollower.Singleton.SetTarget(camTarget);
-            Weapons = new Weapons();
 
             hud = GameObject.Find("UI");
             hud.transform.GetChild(0).transform.position = new Vector3(5.2f, -3.5f);
@@ -99,6 +99,8 @@ public class PlayerScript : NetworkBehaviour
             arrow.zone = zone;
 
         }
+
+        
 
         spriteIdle = Resources.LoadAll<Sprite>("Sprites/" + selectedSprite + " idle");
         spriteWalk = Resources.LoadAll<Sprite>("Sprites/" + selectedSprite + " walk");
@@ -130,7 +132,7 @@ public class PlayerScript : NetworkBehaviour
                 PickupWeapon(nearbyWeapons[0]);
             }
 
-            if(Weapons != null) weapon = Weapons.GetSelectedWeapon();
+            Weapon weapon = Weapons.GetSelectedWeapon();
             if (weapon != null)
             {
                 Rigidbody2D rb = weapon.GetComponent<Rigidbody2D>();

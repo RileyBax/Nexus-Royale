@@ -23,5 +23,7 @@ public class ArrowScript : MonoBehaviour
         this.transform.position = temp;
         this.transform.right = new Vector2(zone.x - playerPos.x, zone.y - playerPos.y);
 
+        if(Vector2.Distance((Vector2) playerPos, zone) < 10) this.transform.position -= new Vector3(0, 0, 20);
+
     }
 }
