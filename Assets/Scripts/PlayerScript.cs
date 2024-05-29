@@ -52,12 +52,12 @@ public class PlayerScript : NetworkBehaviour
     [SerializeField] GameObject arrowObject;
     private ArrowScript arrow;
     [Networked] private Vector2 zone {get;set;}
+    private float stepTimer = 0.0f;
+    [SerializeField] AudioManager am;
 
     // Start is called before the first frame update
     void Start()
     {
-
-        
         
     }
 
@@ -68,6 +68,8 @@ public class PlayerScript : NetworkBehaviour
         this.nearbyWeapons = new List<GameObject>();
         this.inventoryUI = new UnityEngine.UI.Image[3];
         this.inventory = new GameObject[3];
+
+        am = GameObject.Find("Audio Manager(Clone)").GetComponent<AudioManager>();
 
         if (HasInputAuthority)
         {
@@ -97,6 +99,8 @@ public class PlayerScript : NetworkBehaviour
             // arrow doesnt look good but works, is very jittery to host
             arrow = Instantiate(arrowObject).GetComponent<ArrowScript>();
             arrow.zone = zone;
+
+            am.AuthPlayer = this.gameObject;
 
         }
 
@@ -174,12 +178,14 @@ public class PlayerScript : NetworkBehaviour
 
         if(lastHealth > Health) {
             damageTimer = 1.0f;
+            if(am != null) am.PlaySFX("Hit", this.gameObject);
         }
         lastHealth = Health;
 
         if(Health <= 0) {
 
             Instantiate(deathEmitter, this.transform.position, Quaternion.identity);
+            if(am != null) am.PlaySFX("Death", this.gameObject);
             Runner.Despawn(this.GetComponent<NetworkObject>());
             transform.gameObject.SetActive(false);
 
@@ -194,6 +200,16 @@ public class PlayerScript : NetworkBehaviour
 
         }
         else if(!insideZone && zoneDamageTimer > 0.0f) zoneDamageTimer -= Time.deltaTime;
+
+        if(isMoving && HasInputAuthority){
+
+            if(stepTimer <= 0.0f) {
+                if(this.gameObject != null) am.PlaySFX("Walk", this.gameObject);
+                stepTimer = 0.4f;
+            }
+            else stepTimer -= Runner.DeltaTime;
+
+        }
 
     }
 

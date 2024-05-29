@@ -17,10 +17,12 @@ public class Weapon : NetworkBehaviour
     protected int Ammo = 30;
     [SerializeField] SpriteRenderer sr;
     [Networked] bool flip {get; set;}
+    //[SerializeField] AudioManager am;
 
     void Start(){
 
         sr = transform.GetChild(0).GetComponent<SpriteRenderer>();
+        //am = GameObject.Find("Audio Manager(Clone)").GetComponent<AudioManager>();
 
     }
 
@@ -105,6 +107,12 @@ public class Weapon : NetworkBehaviour
 
     public bool GetEquipped(){
         return IsEquipped;
+    }
+
+    public float GetFireRate(){
+
+        return FireRate;
+
     }
 
 }

@@ -101,8 +101,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7be9a7403e64126419a14ed02c08882d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  weaponNear: {fileID: 0}
   rb: {fileID: 1649975598047234916}
   state: 0
+  waitTimer: 0
   offsetTimer: 2
   isMoving: 0
   up: 0
@@ -113,6 +115,7 @@ MonoBehaviour:
   spriteWalk: []
   nt: {fileID: -2167699984852394401}
   deathEmitter: {fileID: 5485862877799509922, guid: 3525af3dec5ee674a8f0d50dbdb7321c, type: 3}
+  am: {fileID: 0}
 --- !u!61 &5616740109871717079
 BoxCollider2D:
   m_ObjectHideFlags: 0

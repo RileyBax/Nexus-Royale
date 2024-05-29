@@ -11,6 +11,16 @@ public class BulletScript : NetworkBehaviour
     private float timer;
     private int angle = 0;
     private int damage;
+    [SerializeField] AudioManager am;
+
+    void Start(){
+
+        // this is bad for performance but it works
+        am = GameObject.Find("Audio Manager(Clone)").GetComponent<AudioManager>();
+
+        if(this.gameObject != null) am.PlaySFX("Shoot", this.gameObject);
+
+    }
 
     // Update is called once per frame
     public override void FixedUpdateNetwork()

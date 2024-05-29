@@ -29,10 +29,12 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     [Networked] private Vector3 zone {get; set;}
     private float width = 0.25f;
     private Vector2[] colliderPoints;
+    [SerializeField] private AudioManager am;
         
     public void Start(){
 
         BotPrefab = Resources.Load<NetworkObject>("Prefabs/Bot");
+        am = Resources.Load<AudioManager>("Prefabs/Audio Manager");
         lr = this.AddComponent<LineRenderer>();
         zoneCollider = this.AddComponent<PolygonCollider2D>();
 
@@ -66,6 +68,8 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         Debug.Log("Spawned");
 
         zone = new Vector3(UnityEngine.Random.Range(-100, 100), UnityEngine.Random.Range(-100, 100), 0);
+        
+        Instantiate(am);
 
     }
 

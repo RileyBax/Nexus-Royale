@@ -48,6 +48,7 @@ public class BotScript : NetworkBehaviour
     private bool alive = true;
     private float zoneDamageTimer = 2.0f;
     private bool insideZone = true;
+    [SerializeField] AudioManager am;
 
     // Start is called before the first frame update
     public override void Spawned()
@@ -60,6 +61,8 @@ public class BotScript : NetworkBehaviour
         spriteWalk = Resources.LoadAll<Sprite>("Sprites/" + selectedSprite + " walk");
 
         Health = 100;
+
+        am = GameObject.Find("Audio Manager(Clone)").GetComponent<AudioManager>();
 
     }
 
@@ -297,18 +300,19 @@ public class BotScript : NetworkBehaviour
 
             lastPos = nt.transform.position;
             lastPosTimer = 0.1f;
-            
 
         }
         else lastPosTimer -= Runner.DeltaTime;
 
         if(lastHealth > Health) {
             damageTimer = 1.0f;
+            am.PlaySFX("Hit", this.gameObject);
         }
         lastHealth = Health;
 
         if(Health <= 0 && alive){
 
+            am.PlaySFX("Death", this.gameObject);
             Instantiate(deathEmitter, this.nt.transform.position, Quaternion.identity);
             Runner.Despawn(this.GetComponent<NetworkObject>());
             transform.gameObject.SetActive(false);
@@ -466,7 +470,9 @@ public class BotScript : NetworkBehaviour
 
             weaponPos = Vector3.zero;
 
-            if(Vector3.Distance(transform.position, target.transform.position) < 10) weaponScript.SendMessage("FireWeapon", new Vector3(target.transform.position.x, target.transform.position.y, 0));
+            if(Vector3.Distance(transform.position, target.transform.position) < 10) {
+                weaponScript.SendMessage("FireWeapon", new Vector3(target.transform.position.x, target.transform.position.y, 0));
+            }
 
         }
 
@@ -492,8 +498,6 @@ public class BotScript : NetworkBehaviour
             }
             
         }
-
-        //if(damage > 0) damageTimer = 1f;
 
     }
 
