@@ -75,6 +75,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
     public void PlayerJoined(PlayerRef player)
     {
+        // dont let join if game started
         if (HasStateAuthority)
         {
             NetworkObject playerObject = Runner.Spawn(playerPrefab, new Vector3(0,0, 0), Quaternion.identity, player);
@@ -235,6 +236,25 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
         zoneCollider.SetPath(0, colliderPoints);
         transform.position = zone;
+
+        // bad for performance
+        if(gameStarted){
+
+            GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>();
+            int activePlayer = 0;
+            
+            for(int i = 0; i < allObjects.Length; i++){
+
+                if(allObjects[i].activeInHierarchy  && allObjects[i].tag.Equals("Character")) activePlayer++;
+
+            }
+
+            if(activePlayer <= 1) {
+                Debug.Log("Winner");
+                // CLOSE SERVER
+            }
+
+        }
 
     }
 
