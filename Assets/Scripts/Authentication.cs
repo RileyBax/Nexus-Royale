@@ -3,10 +3,16 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
+using SurrealDBLib;
+using System.Collections.Generic;
+using System;
+using System.Threading.Tasks;
+
 
 
 public class Authentication : MonoBehaviour
 {
+    public MenuManager MenuManager;
     public GameObject MenuPage;
     public GameObject OpeningPage;
 
@@ -25,6 +31,8 @@ public class Authentication : MonoBehaviour
 
     public class AuthParams
     {
+
+        
         public string username, password, ns, db, sc;
 
         public AuthParams(string username, string password)
@@ -37,27 +45,42 @@ public class Authentication : MonoBehaviour
         }
     }
 
-    public IEnumerator Login(string username, string password) {
+    public async Task Login(string username, string password) {
         string json = JsonUtility.ToJson(new AuthParams(username, password));
         var request = new UnityWebRequest("https://nexus.ryanfolio.live/signin", "POST");
         byte[] bodyRaw = Encoding.UTF8.GetBytes(json);
         request.uploadHandler = (UploadHandler)new UploadHandlerRaw(bodyRaw);
         request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
         request.SetRequestHeader("Content-Type", "application/json");
-        yield return request.SendWebRequest();
-
-        if (request.result != UnityWebRequest.Result.Success)
+        try
         {
-            // Just assuming that it is failing because of bad credentials...
-            LoginErrorText.text = "Credentials Incorrect!";
-            yield break;
-        }
+            await request.SendWebRequestAsync();
 
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    // Just assuming that it is failing because of bad credentials...
+                    LoginErrorText.text = "Credentials Incorrect!";
+                    return;
+                }
+          
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError(ex.Message);
+        }
+        String q = $"SELECT * OMIT password FROM user WHERE username = \"{username}\"";
+        User[] users = await Surreal.Query<User>(q);
+        if(users.Length == 0)
+        {
+            LoginErrorText.text = "User Not Found!";
+            return;
+        }
+        MenuManager.updateUser(users[0]);
         LoginPage.SetActive(false);
         MenuPage.SetActive(true);
     }
 
-    public void LoginHandler()
+    public async void LoginHandler()
     {
         string username = "", password = "";
 
@@ -72,11 +95,11 @@ public class Authentication : MonoBehaviour
             return;
         }
 
-        username = LoginUsernameField.text;
+        username = LoginUsernameField.text.ToUpper();
         password = LoginPasswordField.text;
 
 
-        StartCoroutine(Login(username, password));
+        await Login(username, password);
     }
 
     public IEnumerator Register(string username, string password)
