@@ -41,9 +41,15 @@ public class PauseMenu : MonoBehaviour
         isPaused = false;
     }
 
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+
     public void GoToMainMenu()
     {
         SceneManager.LoadScene("Nexus Royale");
     }
 
 }
+
