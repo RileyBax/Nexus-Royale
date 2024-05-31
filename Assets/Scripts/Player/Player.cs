@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
 
-public class PlayerScript : NetworkBehaviour
+public class Player : NetworkBehaviour
 {
     public Weapons Weapons;
     private List<GameObject> nearbyWeapons;

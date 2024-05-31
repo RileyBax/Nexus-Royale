@@ -16,7 +16,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     private NetworkObject BotPrefab;
     private System.Random rand = new System.Random();
 
-    [Networked, Capacity(20)] public NetworkDictionary<PlayerRef, PlayerScript> Players => default;
+    [Networked, Capacity(20)] public NetworkDictionary<PlayerRef, Player> Players => default;
     public Dictionary<NetworkId, int> BotSprite = new Dictionary<NetworkId, int>();
     public Dictionary<NetworkId, int> PlayerSprite = new Dictionary<NetworkId, int>();
     [Networked] private float timer {get; set;}
@@ -79,7 +79,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         if (HasStateAuthority)
         {
             NetworkObject playerObject = Runner.Spawn(playerPrefab, new Vector3(0,0, 0), Quaternion.identity, player);
-            Players.Add(player, playerObject.GetComponent<PlayerScript>());
+            Players.Add(player, playerObject.GetComponent<Player>());
             int tempRandom = rand.Next(1, 10);
             PlayerSprite.Add(playerObject.Id, tempRandom); // replace tempUnityEngine.Random with selected sprite from main menu
             playerObject.SendMessage("setSprite", tempRandom); // here aswell
@@ -95,7 +95,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
             return;
         }
 
-        if (Players.TryGet(player, out PlayerScript playerScript)) {
+        if (Players.TryGet(player, out Player playerScript)) {
             Players.Remove(player);
             Runner.Despawn(playerScript.Object);
         }
@@ -271,7 +271,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         int y1 = -(int)(tilemapSize.y / 2);
         int y2 = (int)(tilemapSize.y / 2);
 
-        foreach(KeyValuePair<PlayerRef, PlayerScript> p in Players){
+        foreach(KeyValuePair<PlayerRef, Player> p in Players){
 
             int spawned = 0;
 

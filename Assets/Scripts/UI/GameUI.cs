@@ -19,17 +19,10 @@ public class GameUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Manager.Players.TryGet(Runner.LocalPlayer, out var playerData) == false)
+        if (Manager.Players.TryGet(Runner.LocalPlayer, out var player) == false)
         {
-            NetworkObject playerObject = Runner.GetPlayerObject(playerData.PlayerRef);
-            if (playerObject != null)
-            {
-                Player player = playerObject.GetComponent<Player>();
-                if (player != null)
-                {
+
                     WeaponsUI.UpdateWeapons(player.Weapons);
-                }
-            }
         }
     }
 }
