@@ -263,6 +263,12 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
         // UnityEngine.Randomize all player positions
         // Spawn remainer empty spaces with bots
+        var sessionInfo = Runner.SessionInfo;
+
+        if (sessionInfo.IsVisible) 
+        {
+            sessionInfo.IsVisible = false;
+        }
 
         Tilemap.CompressBounds();
         Vector3 tilemapSize = Tilemap.size;
