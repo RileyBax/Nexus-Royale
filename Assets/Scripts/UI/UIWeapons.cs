@@ -13,7 +13,7 @@ public class UIWeapons : MonoBehaviour
         {
             int selectedSlot = weapons.GetSelectedSlot() - 1;
             if (i != selectedSlot) WeaponSlots[i].color = Color.grey;
-            else WeaponSlots[i].color = Color.blue;
+            else WeaponSlots[i].color = Color.white;
 
             Weapon weapon = weapons.GetSlot(i + 1);
             if (WeaponSlots[i].sprite == null && (weapon != null))

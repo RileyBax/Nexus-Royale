@@ -58,6 +58,8 @@ public class Player : NetworkBehaviour
     private GameObject ePopup;
     private float arrowTimer;
     private bool hasSeen;
+    [SerializeField] private Weapon[] clientWeapons = new Weapon[3];
+    private int clientInvSelect = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -82,7 +84,7 @@ public class Player : NetworkBehaviour
 
             hud = GameObject.Find("UI");
             hud.transform.GetChild(0).transform.position = new Vector3(5.2f, -3.5f);
-            for(int i = 0; i < inventoryUI.Length; i++) inventoryUI[i] = hud.transform.GetChild(0).GetChild(i).GetComponent<UnityEngine.UI.Image>();
+            for(int i = 0; i < inventoryUI.Length; i++) inventoryUI[i] = hud.transform.GetChild(0).GetChild(i).GetChild(0).GetComponent<UnityEngine.UI.Image>();
             
 
             healthbar = Instantiate(healthbarObject, hud.transform).GetComponentsInChildren<RectTransform>()[1];
@@ -231,11 +233,12 @@ public class Player : NetworkBehaviour
 
                 for(int i = 0; i < hitColliders.Length; i++){
 
-                    if(hitColliders[i].tag.Equals("Weapon") && !hitColliders[i].gameObject.GetComponent<Weapon>().GetEquipped()) ePopup.SetActive(true);
+                    if(hitColliders[i].tag.Equals("Weapon") && !hitColliders[i].gameObject.GetComponent<Weapon>().GetEquipped() && !hasSeen) ePopup.SetActive(true);
 
                 }
 
             }
+            else ePopup.SetActive(false);
 
             if(Input.GetKeyDown(KeyCode.E) && !hasSeen) hasSeen = true;
 

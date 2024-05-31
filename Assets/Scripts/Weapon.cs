@@ -18,11 +18,13 @@ public class Weapon : NetworkBehaviour
     [SerializeField] SpriteRenderer sr;
     [Networked] bool flip {get; set;}
     //[SerializeField] AudioManager am;
+    [Networked] bool clientVisible {get; set;}
 
     void Start(){
 
         sr = transform.GetChild(0).GetComponent<SpriteRenderer>();
         //am = GameObject.Find("Audio Manager(Clone)").GetComponent<AudioManager>();
+        clientVisible = true;
 
     }
 
@@ -43,6 +45,8 @@ public class Weapon : NetworkBehaviour
     void FixedUpdate(){
 
         sr.flipY = flip;
+        if(!clientVisible && this.transform.GetChild(0).position.z >= -10) this.transform.GetChild(0).position -= new Vector3(0,0,20);
+        else if(clientVisible && this.transform.GetChild(0).position.z <= 10) this.transform.GetChild(0).position += new Vector3(0,0,20);
 
     }
 
@@ -81,6 +85,7 @@ public class Weapon : NetworkBehaviour
 
     public void SetVisible(bool visible)
     {
+        this.clientVisible = visible;
         this.gameObject.SetActive(visible);
         sr.enabled = visible;
     }
