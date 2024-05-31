@@ -2,7 +2,6 @@ using Fusion;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static Unity.Collections.Unicode;
 
 public class GameUI : MonoBehaviour
 {
@@ -20,12 +19,17 @@ public class GameUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Runner = Manager.Runner;
-
-         PlayerScript playerObject = Manager.Players.Get(Runner.LocalPlayer);
-        if (playerObject != null)
+        if (Manager.Players.TryGet(Runner.LocalPlayer, out var playerData) == false)
         {
-            WeaponsUI.UpdateWeapons(playerObject.Weapons);
+            NetworkObject playerObject = Runner.GetPlayerObject(playerData.PlayerRef);
+            if (playerObject != null)
+            {
+                Player player = playerObject.GetComponent<Player>();
+                if (player != null)
+                {
+                    WeaponsUI.UpdateWeapons(player.Weapons);
+                }
+            }
         }
     }
 }

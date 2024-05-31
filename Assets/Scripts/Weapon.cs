@@ -48,7 +48,7 @@ public class Weapon : NetworkBehaviour
 
     public void OnTriggerEnter2D(Collider2D collision)
     {
-        if (Runner.IsServer && collision.tag == "Character" && collision.attachedRigidbody != null && collision.attachedRigidbody.TryGetComponent(out PlayerScript player))
+        if (Runner.IsServer && collision.tag == "Character" && collision.attachedRigidbody != null && collision.attachedRigidbody.TryGetComponent(out Player player))
         {
             player.AddNearbyWeapon(this.gameObject);
         }
@@ -56,7 +56,7 @@ public class Weapon : NetworkBehaviour
 
     public void OnTriggerExit2D(Collider2D collision)
     {
-        if (Runner.IsServer && collision.tag == "Character" && collision.attachedRigidbody != null && collision.attachedRigidbody.TryGetComponent(out PlayerScript player) && collision.gameObject.activeSelf)
+        if (Runner.IsServer && collision.tag == "Character" && collision.attachedRigidbody != null && collision.attachedRigidbody.TryGetComponent(out Player player) && collision.gameObject.activeSelf)
         {
             player.RemoveNeabyWeapon(this.gameObject);
         }
