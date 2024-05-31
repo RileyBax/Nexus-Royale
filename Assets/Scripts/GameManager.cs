@@ -265,9 +265,9 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         // Spawn remainer empty spaces with bots
         var sessionInfo = Runner.SessionInfo;
 
-        if (sessionInfo.IsVisible) 
+        if (sessionInfo.IsOpen) 
         {
-            sessionInfo.IsVisible = false;
+            sessionInfo.IsOpen = false;
         }
 
         Tilemap.CompressBounds();
