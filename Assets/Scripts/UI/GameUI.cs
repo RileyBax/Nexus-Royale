@@ -17,12 +17,15 @@ public class GameUI : MonoBehaviour
     }
 
     // Update is called once per frame
+    // Update is called once per frame
     void Update()
     {
-        if (Manager.Players.TryGet(Runner.LocalPlayer, out var player) == false)
-        {
+        Runner = Manager.Runner;
 
-                    WeaponsUI.UpdateWeapons(player.Weapons);
+        Player playerObject = Manager.Players.Get(Runner.LocalPlayer);
+        if (playerObject != null)
+        {
+            WeaponsUI.UpdateWeapons(playerObject.Weapons);
         }
     }
 }
