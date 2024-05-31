@@ -4,6 +4,7 @@ using Fusion;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 
 public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
@@ -63,13 +64,15 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
     public override void Spawned()
     {
-        timer = 60.0f;
+        timer = 10.0f;
         radius = 400.0f;
         Debug.Log("Spawned");
 
         zone = new Vector3(UnityEngine.Random.Range(-100, 100), UnityEngine.Random.Range(-100, 100), 0);
         
         Instantiate(am);
+
+        //Runner.Spawn(SMGPrefab, new Vector3(0,0,0));
 
     }
 
@@ -98,6 +101,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         if (Players.TryGet(player, out Player playerScript)) {
             Players.Remove(player);
             Runner.Despawn(playerScript.Object);
+            Destroy(playerScript.Object);
         }
     }
 
@@ -237,25 +241,6 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         zoneCollider.SetPath(0, colliderPoints);
         transform.position = zone;
 
-        // bad for performance
-        if(gameStarted){
-
-            GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>();
-            int activePlayer = 0;
-            
-            for(int i = 0; i < allObjects.Length; i++){
-
-                if(allObjects[i].activeInHierarchy  && allObjects[i].tag.Equals("Character")) activePlayer++;
-
-            }
-
-            if(activePlayer <= 1) {
-                Debug.Log("Winner");
-                // CLOSE SERVER
-            }
-
-        }
-
     }
 
     [Rpc]
@@ -302,6 +287,26 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         }
 
         transform.position = zone;
+
+    }
+
+    public void CloseServer(){
+
+        if(Runner.IsServer) {
+            
+            if(Players.Count <= 1){
+
+                SceneManager.LoadScene("Nexus Royale");
+                Runner.Shutdown();
+
+            } 
+            
+        }
+        else{
+            PlayerLeft(Runner.LocalPlayer);
+            SceneManager.LoadScene("Nexus Royale");
+            Runner.Shutdown();
+        }
 
     }
 

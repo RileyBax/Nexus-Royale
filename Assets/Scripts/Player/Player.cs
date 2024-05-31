@@ -60,6 +60,11 @@ public class Player : NetworkBehaviour
     private bool hasSeen;
     private int clientInvSelect = 0;
     private bool[] clientEquipped = new bool[3];
+    [SerializeField] GameObject winScreen;
+    [SerializeField] GameObject deathScreen;
+    private bool gameStarted = false;
+    private bool hasWon = false;
+    private float activePlayerTimer = 5.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -83,7 +88,12 @@ public class Player : NetworkBehaviour
         this.inventoryUI = new UnityEngine.UI.Image[3];
         this.inventory = new GameObject[3];
 
-        am = GameObject.Find("Audio Manager(Clone)").GetComponent<AudioManager>();
+        try{
+            am = GameObject.Find("Audio Manager(Clone)").GetComponent<AudioManager>();
+        }
+        catch{
+            am = Instantiate(Resources.Load<AudioManager>("Prefabs/Audio Manager"));
+        }
 
         if (HasInputAuthority)
         {
@@ -120,6 +130,12 @@ public class Player : NetworkBehaviour
 
             ePopup = Instantiate(ePopupObject, this.transform);
             ePopup.SetActive(false);
+
+            deathScreen = GameObject.Find("DeathScreen");
+            winScreen = GameObject.Find("WinScreen");
+
+            deathScreen.SetActive(false);
+            winScreen.SetActive(false);
 
         }
 
@@ -193,6 +209,8 @@ public class Player : NetworkBehaviour
 
         UpdateHealthBar();
 
+        if(timer < 0) timer -= Runner.DeltaTime;
+
         if(lastHealth > Health) {
             damageTimer = 1.0f;
             if(am != null) am.PlaySFX("Hit", this.gameObject);
@@ -203,7 +221,7 @@ public class Player : NetworkBehaviour
 
             Instantiate(deathEmitter, this.transform.position, Quaternion.identity);
             if(am != null) am.PlaySFX("Death", this.gameObject);
-            //Runner.Despawn(this.GetComponent<NetworkObject>()); causing big problems
+            if(HasInputAuthority) deathScreen.SetActive(true);
             transform.gameObject.SetActive(false);
 
         }
@@ -237,6 +255,43 @@ public class Player : NetworkBehaviour
             else inventoryUI[i].color = Color.white;
 
         }
+
+        if(timer <= 0.0f && !gameStarted){
+
+            gameStarted = true;
+
+        }
+
+        // bad for performance
+        if(gameStarted && activePlayerTimer <= 0.0f){
+
+            GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>();
+            int activePlayer = 0;
+            
+            for(int i = 0; i < allObjects.Length; i++){
+
+                if(allObjects[i].activeInHierarchy  && allObjects[i].tag.Equals("Character")) activePlayer++;
+
+            }
+
+            if(activePlayer <= 1 && !hasWon) {
+
+                hasWon = true;
+
+                if(HasInputAuthority){
+
+                    winScreen.SetActive(true);
+
+                }
+
+                Debug.Log("Winner");
+                // CLOSE SERVER
+            }
+
+            activePlayerTimer = 5.0f;
+
+        }
+        else activePlayerTimer -= Runner.DeltaTime;
 
     }
 

@@ -23,6 +23,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private NetworkRunner _runnerPrefab;
     private NetworkRunner _runner;
     public int selectedPlayer = 1;
+
     public void HostGame()
     {
         this.StartGame(GameMode.Host);
@@ -79,7 +80,6 @@ public class MenuManager : MonoBehaviour
 
     async void Start()
     {
-        
 
         isPurchased = new bool[buttons.Length];
 
@@ -144,4 +144,5 @@ public class MenuManager : MonoBehaviour
             OnEquipButtonClicked(clickedButton);
         }
     }
+
 }
