@@ -71,8 +71,6 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         
         Instantiate(am);
 
-        Runner.Spawn(SMGPrefab, new Vector3(0,0,0));
-
     }
 
     public void PlayerJoined(PlayerRef player)

@@ -277,10 +277,10 @@ public class Player : NetworkBehaviour
         if(Input.GetKey(KeyCode.E) && hitColliders.Length > 0 && !clientEquipped[clientInvSelect]){
             for(int i = 0; i < hitColliders.Length; i++){
                 if(hitColliders[i].tag.Equals("Weapon")) {
-                    if(!hitColliders[i].gameObject.GetComponent<Weapon>().GetEquipped()){
+                    if(!hitColliders[i].gameObject.GetComponent<Weapon>().clientEquipped){
                         inventoryUI[clientInvSelect].sprite = hitColliders[i].gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
                         clientEquipped[clientInvSelect] = true;
-                        hitColliders[i].gameObject.GetComponent<Weapon>().setEquipped(true);
+                        hitColliders[i].gameObject.GetComponent<Weapon>().clientEquipped = true;
                     }
                 }
             }
@@ -296,7 +296,7 @@ public class Player : NetworkBehaviour
             Weapons.PickupWeapon(weapon);
             weapon.SetPlayer(this.gameObject);
             weapon.setEquipped(true);
-
+            
             nearbyWeapons.Remove(w);
         }
     }

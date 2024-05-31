@@ -427,6 +427,7 @@ public class BotScript : NetworkBehaviour
                 weapon = col.gameObject;
                 weaponScript.setEquipped(true);
                 weaponScript.SetPlayer(this.gameObject);
+                weaponScript.clientEquipped = true;
 
                 state = 1;
 

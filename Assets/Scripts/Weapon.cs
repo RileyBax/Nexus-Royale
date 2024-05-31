@@ -19,6 +19,7 @@ public class Weapon : NetworkBehaviour
     [Networked] bool flip {get; set;}
     //[SerializeField] AudioManager am;
     [Networked] bool clientVisible {get; set;}
+    public bool clientEquipped = false;
 
     void Start(){
 
@@ -93,6 +94,12 @@ public class Weapon : NetworkBehaviour
     public void setEquipped(bool e)
     {
         IsEquipped = e;
+    }
+
+    public GameObject GetPlayer(){
+
+        return Player;
+
     }
 
     public void SetPlayer(GameObject p)

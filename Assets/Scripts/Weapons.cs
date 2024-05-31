@@ -37,7 +37,7 @@ public class Weapons : NetworkBehaviour
         {
             currentWeapon.RemovePlayer();
         }
-
+        
         SetSlotWeapon(SelectedWeapon, weapon);
     }
 
