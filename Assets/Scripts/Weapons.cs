@@ -20,10 +20,10 @@ public class Weapons : NetworkBehaviour
         Weapon weapon = this.GetSlot(SelectedWeapon);
         if (weapon != null)
         {
-        weapon.SetVisible(false);
+            weapon.SetVisible(false);
         }
         SelectedWeapon = slotNum;
-        weapon = this.GetSlot(SelectedWeapon);
+        weapon = this.GetSlot(slotNum);
         if (weapon != null)
         {
             weapon.SetVisible(true);
