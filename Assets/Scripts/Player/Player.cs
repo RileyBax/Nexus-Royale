@@ -58,12 +58,20 @@ public class Player : NetworkBehaviour
     private GameObject ePopup;
     private float arrowTimer;
     private bool hasSeen;
-    [SerializeField] private Weapon[] clientWeapons = new Weapon[3];
     private int clientInvSelect = 0;
+    private bool[] clientEquipped = new bool[3];
 
     // Start is called before the first frame update
     void Start()
     {
+
+        for(int i = 0; i < clientEquipped.Length; i++){
+
+            clientEquipped[i] = false;
+
+        }
+
+        for(int i = 0; i < inventoryUI.Length; i++) inventoryUI[i] = GameObject.Find("UI").transform.GetChild(0).GetChild(i).GetChild(0).GetComponent<UnityEngine.UI.Image>();
         
     }
 
@@ -114,8 +122,6 @@ public class Player : NetworkBehaviour
             ePopup.SetActive(false);
 
         }
-
-        
 
         spriteIdle = Resources.LoadAll<Sprite>("Sprites/" + selectedSprite + " idle");
         spriteWalk = Resources.LoadAll<Sprite>("Sprites/" + selectedSprite + " walk");
@@ -225,7 +231,30 @@ public class Player : NetworkBehaviour
         if(arrow != null && arrowTimer <= 0.0f) arrow.gameObject.SetActive(true);
         else arrowTimer -= Runner.DeltaTime;
 
-        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, 0.5f);
+        for(int i = 0; i < 3; i++){
+
+            if (i != clientInvSelect) inventoryUI[i].color = Color.grey;
+            else inventoryUI[i].color = Color.white;
+
+        }
+
+    }
+
+    void Update(){
+
+        if(arrow != null) arrow.playerPos = transform.position;
+
+        if(Input.GetKeyDown(KeyCode.Alpha1)){
+            clientInvSelect = 0;
+        }
+        if(Input.GetKeyDown(KeyCode.Alpha2)){
+            clientInvSelect = 1;
+        }
+        if(Input.GetKeyDown(KeyCode.Alpha3)){
+            clientInvSelect = 2;
+        }
+
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, 0.8f);
         if(ePopup != null){
 
             ePopup.SetActive(false);
@@ -244,11 +273,19 @@ public class Player : NetworkBehaviour
 
         }
 
-    }
+        hitColliders = Physics2D.OverlapCircleAll(transform.position, 0.8f);
+        if(Input.GetKey(KeyCode.E) && hitColliders.Length > 0 && !clientEquipped[clientInvSelect]){
+            for(int i = 0; i < hitColliders.Length; i++){
+                if(hitColliders[i].tag.Equals("Weapon")) {
+                    if(!hitColliders[i].gameObject.GetComponent<Weapon>().GetEquipped()){
+                        inventoryUI[clientInvSelect].sprite = hitColliders[i].gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
+                        clientEquipped[clientInvSelect] = true;
+                        hitColliders[i].gameObject.GetComponent<Weapon>().setEquipped(true);
+                    }
+                }
+            }
 
-    void Update(){
-
-        if(arrow != null) arrow.playerPos = transform.position;
+        }
 
     }
 

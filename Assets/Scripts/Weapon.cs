@@ -45,8 +45,8 @@ public class Weapon : NetworkBehaviour
     void FixedUpdate(){
 
         sr.flipY = flip;
-        if(!clientVisible && this.transform.GetChild(0).position.z >= -10) this.transform.GetChild(0).position -= new Vector3(0,0,20);
-        else if(clientVisible && this.transform.GetChild(0).position.z <= 10) this.transform.GetChild(0).position += new Vector3(0,0,20);
+        if(!clientVisible && this.transform.GetChild(0).position.z >= -10) this.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1,1,1,0);
+        else if(clientVisible && this.transform.GetChild(0).position.z <= 10) this.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1,1,1,1);
 
     }
 

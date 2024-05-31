@@ -12,17 +12,17 @@ public class UIWeapons : MonoBehaviour
         for (int i = 0; i < 3; i++)
         {
             int selectedSlot = weapons.GetSelectedSlot() - 1;
-            if (i != selectedSlot) WeaponSlots[i].color = Color.grey;
-            else WeaponSlots[i].color = Color.white;
+            // if (i != selectedSlot) WeaponSlots[i].color = Color.grey;
+            // else WeaponSlots[i].color = Color.white;
 
             Weapon weapon = weapons.GetSlot(i + 1);
             if (WeaponSlots[i].sprite == null && (weapon != null))
             {
-                WeaponSlots[i].sprite = weapon.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
+                //WeaponSlots[i].sprite = weapon.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
             }
             if (WeaponSlots[i].sprite != null && weapon == null)
             {
-                WeaponSlots[i].sprite = null;
+                //WeaponSlots[i].sprite = null;
             }
         }
     }
