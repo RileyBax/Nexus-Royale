@@ -214,7 +214,7 @@ public class BotScript : NetworkBehaviour
         // Target found, starts firing and moving around target position
         else if(state == 2){
 
-            if(target != null) {
+            if(target != null && target.activeSelf) {
                 
                 updateWeapon();
 

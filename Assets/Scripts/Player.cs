@@ -54,6 +54,10 @@ public class PlayerScript : NetworkBehaviour
     [Networked] private Vector2 zone {get;set;}
     private float stepTimer = 0.0f;
     [SerializeField] AudioManager am;
+    [SerializeField] GameObject ePopupObject;
+    private GameObject ePopup;
+    private float arrowTimer;
+    private bool hasSeen;
 
     // Start is called before the first frame update
     void Start()
@@ -79,6 +83,7 @@ public class PlayerScript : NetworkBehaviour
             hud = GameObject.Find("UI");
             hud.transform.GetChild(0).transform.position = new Vector3(5.2f, -3.5f);
             for(int i = 0; i < inventoryUI.Length; i++) inventoryUI[i] = hud.transform.GetChild(0).GetChild(i).GetComponent<UnityEngine.UI.Image>();
+            
 
             healthbar = Instantiate(healthbarObject, hud.transform).GetComponentsInChildren<RectTransform>()[1];
             healthbarLength = 570;
@@ -99,8 +104,12 @@ public class PlayerScript : NetworkBehaviour
             // arrow doesnt look good but works, is very jittery to host
             arrow = Instantiate(arrowObject).GetComponent<ArrowScript>();
             arrow.zone = zone;
+            arrow.gameObject.SetActive(false);
 
             am.AuthPlayer = this.gameObject;
+
+            ePopup = Instantiate(ePopupObject, this.transform);
+            ePopup.SetActive(false);
 
         }
 
@@ -186,7 +195,7 @@ public class PlayerScript : NetworkBehaviour
 
             Instantiate(deathEmitter, this.transform.position, Quaternion.identity);
             if(am != null) am.PlaySFX("Death", this.gameObject);
-            Runner.Despawn(this.GetComponent<NetworkObject>());
+            //Runner.Despawn(this.GetComponent<NetworkObject>()); causing big problems
             transform.gameObject.SetActive(false);
 
         }
@@ -208,6 +217,27 @@ public class PlayerScript : NetworkBehaviour
                 stepTimer = 0.4f;
             }
             else stepTimer -= Runner.DeltaTime;
+
+        }
+
+        if(arrow != null && arrowTimer <= 0.0f) arrow.gameObject.SetActive(true);
+        else arrowTimer -= Runner.DeltaTime;
+
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, 0.5f);
+        if(ePopup != null){
+
+            ePopup.SetActive(false);
+            if(!hasSeen) {
+
+                for(int i = 0; i < hitColliders.Length; i++){
+
+                    if(hitColliders[i].tag.Equals("Weapon") && !hitColliders[i].gameObject.GetComponent<Weapon>().GetEquipped()) ePopup.SetActive(true);
+
+                }
+
+            }
+
+            if(Input.GetKeyDown(KeyCode.E) && !hasSeen) hasSeen = true;
 
         }
 
@@ -344,7 +374,11 @@ public class PlayerScript : NetworkBehaviour
 
         if(timer < 60) timer = t - 4;
         else timer = t;
-        if(lobbyTimerScript != null) lobbyTimerScript.timer = t;
+
+        if(lobbyTimerScript != null) {
+            lobbyTimerScript.timer = t;
+            arrowTimer = t;
+        }
 
     }
 
