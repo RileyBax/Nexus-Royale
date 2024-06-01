@@ -5,9 +5,22 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
+    public static AudioManager Instance;
     public Sound[] musicSounds, sfxSounds;
     public AudioSource musicSource, sfxSource;
     public GameObject AuthPlayer;
+
+    private void Awake(){
+
+        if(Instance == null){
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else{
+            Destroy(gameObject);
+        }
+
+    }
 
     public void PlayMusic(string name){
 
@@ -16,6 +29,8 @@ public class AudioManager : MonoBehaviour
         if(s != null){
 
             musicSource.clip = s.clip;
+            musicSource.volume = 0.0f;
+            musicSource.loop = true;
             musicSource.Play();
 
         }

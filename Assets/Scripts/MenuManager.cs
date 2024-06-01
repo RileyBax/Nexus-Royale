@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -23,6 +24,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private NetworkRunner _runnerPrefab;
     private NetworkRunner _runner;
     public int selectedPlayer = 1;
+    public AudioManager am;
 
     public void HostGame()
     {
@@ -37,6 +39,9 @@ public class MenuManager : MonoBehaviour
 
     public async void StartGame(GameMode mode)
     {
+
+        Destroy(am.gameObject);
+
         var appSettings = PhotonAppSettings.Global.AppSettings.GetCopy();
         appSettings.FixedRegion = "au";
         appSettings.UseNameServer = true;
@@ -81,6 +86,9 @@ public class MenuManager : MonoBehaviour
     async void Start()
     {
 
+        am = Instantiate(Resources.Load("Prefabs/Audio Manager")).GetComponent<AudioManager>();
+        am.PlayMusic("Menu");
+
         isPurchased = new bool[buttons.Length];
 
         for (int i = 0; i < buttons.Length; i++)
@@ -100,6 +108,7 @@ public class MenuManager : MonoBehaviour
                 buttons[i].onClick.AddListener(() => OnPurchaseButtonClicked(buttons[index], index));
             }
         }
+
     }
 
     public void updateUser(User user)
@@ -143,6 +152,12 @@ public class MenuManager : MonoBehaviour
             
             OnEquipButtonClicked(clickedButton);
         }
+    }
+
+    public void Quit(){
+
+        Application.Quit();
+
     }
 
 }

@@ -49,6 +49,8 @@ public class Weapon : NetworkBehaviour
         if(!clientVisible && this.transform.GetChild(0).position.z >= -10) this.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1,1,1,0);
         else if(clientVisible && this.transform.GetChild(0).position.z <= 10) this.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1,1,1,1);
 
+        if(Player == null) clientEquipped = false;
+
     }
 
     public void OnTriggerEnter2D(Collider2D collision)

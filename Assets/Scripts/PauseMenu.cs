@@ -45,11 +45,12 @@ public class PauseMenu : MonoBehaviour
 
     public void QuitGame()
     {
-        Application.Quit();
+        gm.Quit();
     }
 
     public void GoToMainMenu()
     {
+        Destroy(GameObject.Find("Audio Manager(Clone)"));
         gm.CloseServer();
     }
 

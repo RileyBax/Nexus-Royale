@@ -174,7 +174,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbb80e3855429a242a72e6e1691ffd9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  musicSounds: []
+  musicSounds:
+  - name: Menu
+    clip: {fileID: 8300000, guid: a7942233b35c9394e93c4b27ec8e4bbf, type: 3}
+  - name: Game
+    clip: {fileID: 8300000, guid: 01b2898723fb5cb4fa2b0b360622b4d8, type: 3}
   sfxSounds:
   - name: Death
     clip: {fileID: 8300000, guid: 5c787d9efec328d4092d6749df6de1f8, type: 3}

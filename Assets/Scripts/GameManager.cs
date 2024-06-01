@@ -64,7 +64,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
     public override void Spawned()
     {
-        timer = 10.0f;
+        timer = 60.0f;
         radius = 400.0f;
         Debug.Log("Spawned");
 
@@ -306,6 +306,28 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
             PlayerLeft(Runner.LocalPlayer);
             SceneManager.LoadScene("Nexus Royale");
             Runner.Shutdown();
+        }
+
+    }
+
+    public void Quit(){
+
+        if(Runner.IsServer) {
+            
+            if(Players.Count <= 1){
+
+                SceneManager.LoadScene("Nexus Royale");
+                Runner.Shutdown();
+                Application.Quit();
+
+            } 
+            
+        }
+        else{
+            PlayerLeft(Runner.LocalPlayer);
+            SceneManager.LoadScene("Nexus Royale");
+            Runner.Shutdown();
+            Application.Quit();
         }
 
     }

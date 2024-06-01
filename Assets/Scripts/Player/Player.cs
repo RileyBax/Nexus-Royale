@@ -137,6 +137,8 @@ public class Player : NetworkBehaviour
             deathScreen.SetActive(false);
             winScreen.SetActive(false);
 
+            am.PlayMusic("Game");
+
         }
 
         spriteIdle = Resources.LoadAll<Sprite>("Sprites/" + selectedSprite + " idle");
@@ -209,7 +211,7 @@ public class Player : NetworkBehaviour
 
         UpdateHealthBar();
 
-        if(timer < 0) timer -= Runner.DeltaTime;
+        if(timer > 0) timer -= Runner.DeltaTime;
 
         if(lastHealth > Health) {
             damageTimer = 1.0f;
@@ -262,12 +264,10 @@ public class Player : NetworkBehaviour
 
         }
 
-        // bad for performance
         if(gameStarted && activePlayerTimer <= 0.0f){
 
             GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>();
             int activePlayer = 0;
-            
             for(int i = 0; i < allObjects.Length; i++){
 
                 if(allObjects[i].activeInHierarchy  && allObjects[i].tag.Equals("Character")) activePlayer++;
@@ -285,7 +285,6 @@ public class Player : NetworkBehaviour
                 }
 
                 Debug.Log("Winner");
-                // CLOSE SERVER
             }
 
             activePlayerTimer = 5.0f;
@@ -474,6 +473,8 @@ public class Player : NetworkBehaviour
             lobbyTimerScript.timer = t;
             arrowTimer = t;
         }
+
+        timer += 20;
 
     }
 
