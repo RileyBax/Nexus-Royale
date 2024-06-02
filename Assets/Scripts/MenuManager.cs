@@ -25,6 +25,8 @@ public class MenuManager : MonoBehaviour
     private NetworkRunner _runner;
     public int selectedPlayer = 1;
     public AudioManager am;
+    [SerializeField] private Slider musicSlider;
+    [SerializeField] private Slider SFXSlider;
 
     public void HostGame()
     {
@@ -157,6 +159,13 @@ public class MenuManager : MonoBehaviour
     public void Quit(){
 
         Application.Quit();
+
+    }
+
+    void Update(){
+
+        am.SFXVolume(SFXSlider.value);
+        am.MusicVolume(musicSlider.value);
 
     }
 

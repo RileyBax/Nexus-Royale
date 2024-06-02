@@ -9,6 +9,8 @@ public class AudioManager : MonoBehaviour
     public Sound[] musicSounds, sfxSounds;
     public AudioSource musicSource, sfxSource;
     public GameObject AuthPlayer;
+    private float mVolume = 0.0f;
+    private float sVolume = 0.5f;
 
     private void Awake(){
 
@@ -29,7 +31,7 @@ public class AudioManager : MonoBehaviour
         if(s != null){
 
             musicSource.clip = s.clip;
-            musicSource.volume = 0.0f;
+            musicSource.volume = mVolume;
             musicSource.loop = true;
             musicSource.Play();
 
@@ -43,9 +45,23 @@ public class AudioManager : MonoBehaviour
 
         if(s != null && Vector3.Distance(call.transform.position, AuthPlayer.transform.position) < 20){
 
+            sfxSource.volume = sVolume;
             sfxSource.PlayOneShot(s.clip);
 
         }
+
+    }
+
+    public void SFXVolume(float i){
+
+        sVolume = i;
+
+    }
+
+    public void MusicVolume(float i){
+
+        mVolume = i;
+        musicSource.volume = i;
 
     }
 
