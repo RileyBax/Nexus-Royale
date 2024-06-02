@@ -138,6 +138,7 @@ MonoBehaviour:
   Weapons: {fileID: 0}
   hud: {fileID: 0}
   camTarget: {fileID: 3589147229896252828}
+  _Name: 
   sr: {fileID: 7749910632487039352}
   spriteIdle: []
   spriteWalk: []
