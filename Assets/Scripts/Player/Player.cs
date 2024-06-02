@@ -1,9 +1,7 @@
-using ExitGames.Client.Photon;
 using Fusion;
 using Fusion.StatsInternal;
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
 
@@ -17,6 +15,7 @@ public class Player : NetworkBehaviour
     // Camera target (the main camera) reference
     [SerializeField] private Transform camTarget;
     [Networked] private int Health {get; set;}
+    [Networked] public string Name { get; private set; }
     private int lastHealth = 100;
     [SerializeField] SpriteRenderer sr;
 
@@ -82,6 +81,10 @@ public class Player : NetworkBehaviour
 
     public override void Spawned()
     {
+        Name = PlayerInfo.Username;
+        RPC_PlayerName(Name);
+        selectedSprite = PlayerInfo.Skin;
+        RPC_PlayerSprite(selectedSprite);
         Weapons = new Weapons();
 
         this.nearbyWeapons = new List<GameObject>();
@@ -446,6 +449,12 @@ public class Player : NetworkBehaviour
 
         if(data.Velocity.x <= -1 && sr.flipX != true) sr.flipX = true;
         else if(data.Velocity.x >= 1 && sr.flipX != false) sr.flipX = false;
+
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    private void RPC_PlayerName(string name)
+    {
 
     }
 
