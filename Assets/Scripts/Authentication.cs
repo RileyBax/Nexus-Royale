@@ -75,6 +75,7 @@ public class Authentication : MonoBehaviour
             LoginErrorText.text = "User Not Found!";
             return;
         }
+        Debug.Log(users[0].unlockedSkins[0]);
         MenuManager.updateUser(users[0]);
         LoginPage.SetActive(false);
         MenuPage.SetActive(true);

@@ -17,6 +17,7 @@ public class User
     public String username;
     public String password;
     public int credits;
+    public bool[] unlockedSkins;
 }
 public class MenuManager : MonoBehaviour
 {
@@ -27,6 +28,7 @@ public class MenuManager : MonoBehaviour
     public AudioManager am;
     [SerializeField] private Slider musicSlider;
     [SerializeField] private Slider SFXSlider;
+    public TMP_Text ErrorMessage;
 
     public void HostGame()
     {
@@ -95,22 +97,20 @@ public class MenuManager : MonoBehaviour
 
         for (int i = 0; i < buttons.Length; i++)
         {
-            
-            if (i < 2)
+            int index = i;
+            if (user.unlockedSkins[i])
             {
-                buttons[i].GetComponentInChildren<Text>().text = "Equip";
-                int index = i; 
+                buttons[i].GetComponentInChildren<TMP_Text>().text = "Equip";
                 buttons[i].onClick.AddListener(() => OnEquipButtonClicked(buttons[index]));
             }
-            
+
             else
             {
-                buttons[i].GetComponentInChildren<Text>().text = "100 credits";
-                int index = i; 
+                buttons[i].GetComponentInChildren<TMP_Text>().text = "100 credits";
                 buttons[i].onClick.AddListener(() => OnPurchaseButtonClicked(buttons[index], index));
             }
-        }
 
+        }
     }
 
     public void updateUser(User user)
@@ -131,11 +131,12 @@ public class MenuManager : MonoBehaviour
         
         if (currentlyEquippedButton != null)
         {
-            currentlyEquippedButton.GetComponentInChildren<Text>().text = "Equip";
+            ErrorMessage.text = "";
+            currentlyEquippedButton.GetComponentInChildren<TMP_Text>().text = "Equip";
         }
 
-        
-        clickedButton.GetComponentInChildren<Text>().text = "Equipped";
+        ErrorMessage.text = "";
+        clickedButton.GetComponentInChildren<TMP_Text>().text = "Equipped";
         currentlyEquippedButton = clickedButton;
     }
 
@@ -144,10 +145,23 @@ public class MenuManager : MonoBehaviour
         
         if (!isPurchased[index])
         {
-            isPurchased[index] = true;
-            clickedButton.GetComponentInChildren<Text>().text = "Equip";
-            clickedButton.onClick.RemoveAllListeners(); 
-            clickedButton.onClick.AddListener(() => OnEquipButtonClicked(clickedButton)); 
+            if (user.credits < 100)
+            {
+                ErrorMessage.text = "Not enough credits!";
+            }
+            else
+            {
+                ErrorMessage.text = "";
+
+                isPurchased[index] = true;
+                clickedButton.GetComponentInChildren<TMP_Text>().text = "Equip";
+                user.credits -= 100;
+                updateCreditsText(this.user.credits);
+                UpdateDB(index);
+                OnEquipButtonClicked(buttons[index]);
+                clickedButton.onClick.RemoveAllListeners();
+                clickedButton.onClick.AddListener(() => OnEquipButtonClicked(clickedButton));
+            }
         }
         else
         {
@@ -166,6 +180,13 @@ public class MenuManager : MonoBehaviour
 
         am.SFXVolume(SFXSlider.value);
         am.MusicVolume(musicSlider.value);
+
+    }
+
+    public async void UpdateDB(int index)
+    {
+        String send = $"UPDATE user SET credits = {user.credits}, unlockedSkins[{index}] = true WHERE username = \"{user.username}\"; ";
+        User[] users = await Surreal.Query<User>(send);
 
     }
 
