@@ -83,9 +83,8 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         {
             NetworkObject playerObject = Runner.Spawn(playerPrefab, new Vector3(0,0, 0), Quaternion.identity, player);
             Players.Add(player, playerObject.GetComponent<Player>());
-            int tempRandom = rand.Next(1, 10);
-            PlayerSprite.Add(playerObject.Id, tempRandom); // replace tempUnityEngine.Random with selected sprite from main menu
-            playerObject.SendMessage("setSprite", tempRandom); // here aswell
+            PlayerSprite.Add(playerObject.Id, PlayerInfo.Skin);
+            playerObject.SendMessage("setSprite", PlayerInfo.Skin);
             playerObject.SendMessage("setTimer", timer - 2);
             playerObject.SendMessage("setZone", (Vector2) zone);
             

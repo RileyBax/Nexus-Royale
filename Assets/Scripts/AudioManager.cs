@@ -9,8 +9,8 @@ public class AudioManager : MonoBehaviour
     public Sound[] musicSounds, sfxSounds;
     public AudioSource musicSource, sfxSource;
     public GameObject AuthPlayer;
-    private float mVolume = 0.0f;
-    private float sVolume = 0.5f;
+    public float mVolume = 0.0f;
+    public float sVolume = 0.5f;
 
     private void Awake(){
 

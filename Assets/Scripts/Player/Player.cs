@@ -98,6 +98,9 @@ public class Player : NetworkBehaviour
             am = Instantiate(Resources.Load<AudioManager>("Prefabs/Audio Manager"));
         }
 
+        am.mVolume = PlayerInfo.MusicVolume;
+        am.sVolume = PlayerInfo.SoundVolume;
+
         if (HasInputAuthority)
         {
 
@@ -455,7 +458,13 @@ public class Player : NetworkBehaviour
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     private void RPC_PlayerName(string name)
     {
+        Name = name;
+    }
 
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    private void RPC_PlayerSprite(int skin)
+    {
+        selectedSprite = skin;
     }
 
     public void setSprite(int s){

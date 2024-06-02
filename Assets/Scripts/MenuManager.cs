@@ -43,6 +43,11 @@ public class MenuManager : MonoBehaviour
 
     public async void StartGame(GameMode mode)
     {
+        PlayerInfo.ID = user.id;
+        PlayerInfo.Username = user.username;
+        PlayerInfo.Skin = selectedPlayer;
+        PlayerInfo.MusicVolume = am.mVolume;
+        PlayerInfo.SoundVolume = am.sVolume;
 
         Destroy(am.gameObject);
 
@@ -101,7 +106,7 @@ public class MenuManager : MonoBehaviour
             if (user.unlockedSkins[i])
             {
                 buttons[i].GetComponentInChildren<TMP_Text>().text = "Equip";
-                buttons[i].onClick.AddListener(() => OnEquipButtonClicked(buttons[index]));
+                buttons[i].onClick.AddListener(() => OnEquipButtonClicked(buttons[index], index));
             }
 
             else
@@ -126,7 +131,7 @@ public class MenuManager : MonoBehaviour
         CurrentCreditsText.text = $"{credits}";
     }
 
-    void OnEquipButtonClicked(Button clickedButton)
+    void OnEquipButtonClicked(Button clickedButton, int index)
     {
         
         if (currentlyEquippedButton != null)
@@ -138,6 +143,7 @@ public class MenuManager : MonoBehaviour
         ErrorMessage.text = "";
         clickedButton.GetComponentInChildren<TMP_Text>().text = "Equipped";
         currentlyEquippedButton = clickedButton;
+        SelectPlayer(index + 1);
     }
 
     void OnPurchaseButtonClicked(Button clickedButton, int index)
@@ -158,15 +164,15 @@ public class MenuManager : MonoBehaviour
                 user.credits -= 100;
                 updateCreditsText(this.user.credits);
                 UpdateDB(index);
-                OnEquipButtonClicked(buttons[index]);
+                OnEquipButtonClicked(buttons[index], index);
                 clickedButton.onClick.RemoveAllListeners();
-                clickedButton.onClick.AddListener(() => OnEquipButtonClicked(clickedButton));
+                clickedButton.onClick.AddListener(() => OnEquipButtonClicked(clickedButton, index));
             }
         }
         else
         {
             
-            OnEquipButtonClicked(clickedButton);
+            OnEquipButtonClicked(clickedButton, index);
         }
     }
 
