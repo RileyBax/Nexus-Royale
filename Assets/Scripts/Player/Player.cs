@@ -233,7 +233,7 @@ public class Player : NetworkBehaviour
             if(am != null) am.PlaySFX("Death", this.gameObject);
             if (HasInputAuthority)
             {
-            gameManager.RPC_PlayerKilled(PlayerInfo.Username);
+            gameManager.RPC_PlayerKilled(this.Name);
                 deathScreen.SetActive(true);
             }
                 transform.gameObject.SetActive(false);

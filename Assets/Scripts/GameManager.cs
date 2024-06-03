@@ -293,7 +293,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All, Channel = RpcChannel.Reliable)]
     public void RPC_PlayerKilled(String username)
     {
         KillFeed.AddKillEntry(username);
