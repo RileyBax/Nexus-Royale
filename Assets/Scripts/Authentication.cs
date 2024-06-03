@@ -3,8 +3,6 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
-using SurrealDBLib;
-using System.Collections.Generic;
 using System;
 using System.Threading.Tasks;
 

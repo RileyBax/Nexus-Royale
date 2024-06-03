@@ -10,7 +10,6 @@ public class Player : NetworkBehaviour
     public Weapons Weapons;
     private List<GameObject> nearbyWeapons;
     private UnityEngine.UI.Image[] inventoryUI;
-    private GameObject[] inventory;
     [SerializeField] private GameObject hud;
     // Camera target (the main camera) reference
     [SerializeField] private Transform camTarget;
@@ -89,7 +88,6 @@ public class Player : NetworkBehaviour
 
         this.nearbyWeapons = new List<GameObject>();
         this.inventoryUI = new UnityEngine.UI.Image[3];
-        this.inventory = new GameObject[3];
 
         try{
             am = GameObject.Find("Audio Manager(Clone)").GetComponent<AudioManager>();
