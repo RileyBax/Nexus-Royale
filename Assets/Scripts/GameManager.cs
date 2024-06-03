@@ -55,7 +55,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
         this.tag = "Game Manager";
 
-        timer = 60.0f;
+        timer = 30.0f;
 
         radius = 400.0f;
 
@@ -63,7 +63,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
     public override void Spawned()
     {
-        timer = 60.0f;
+        timer = 30.0f;
         radius = 400.0f;
         Debug.Log("Spawned");
 
@@ -191,8 +191,6 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
     public override void FixedUpdateNetwork()
     {
-        
-        timer -= Runner.DeltaTime;
 
         if(timer <= 0.0f && !gameStarted) {
             gameStarted = true;
@@ -217,6 +215,8 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     }
 
     void FixedUpdate(){
+
+        timer -= Runner.DeltaTime;
 
         if(radius >= 10) radius -= Runner.DeltaTime;
 
@@ -244,47 +244,51 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     [Rpc]
     public void RpcStartGame(){
 
-        // UnityEngine.Randomize all player positions
-        // Spawn remainer empty spaces with bots
-        var sessionInfo = Runner.SessionInfo;
+        if(Runner.IsServer){
 
-        if (sessionInfo.IsOpen) 
-        {
-            sessionInfo.IsOpen = false;
-        }
+            // UnityEngine.Randomize all player positions
+            // Spawn remainer empty spaces with bots
+            var sessionInfo = Runner.SessionInfo;
 
-        Tilemap.CompressBounds();
-        Vector3 tilemapSize = Tilemap.size;
-        int x1 = -(int)(tilemapSize.x / 2);
-        int x2 = (int)(tilemapSize.x / 2);
-        int y1 = -(int)(tilemapSize.y / 2);
-        int y2 = (int)(tilemapSize.y / 2);
+            if (sessionInfo.IsOpen) 
+            {
+                sessionInfo.IsOpen = false;
+            }
 
-        foreach(KeyValuePair<PlayerRef, Player> p in Players){
+            Tilemap.CompressBounds();
+            Vector3 tilemapSize = Tilemap.size;
+            int x1 = -(int)(tilemapSize.x / 2);
+            int x2 = (int)(tilemapSize.x / 2);
+            int y1 = -(int)(tilemapSize.y / 2);
+            int y2 = (int)(tilemapSize.y / 2);
 
-            int spawned = 0;
+            foreach(KeyValuePair<PlayerRef, Player> p in Players){
 
-            while(spawned < 1){
+                int spawned = 0;
 
-                var position = new Vector3(UnityEngine.Random.Range(x1, x2), UnityEngine.Random.Range(y1, y2));
+                while(spawned < 1){
 
-                if (!Physics.CheckBox(position, new Vector3(1, 1, 1))){
+                    var position = new Vector3(UnityEngine.Random.Range(x1, x2), UnityEngine.Random.Range(y1, y2));
 
-                    p.Value.transform.position = position;
-                    spawned++;
+                    if (!Physics.CheckBox(position, new Vector3(1, 1, 1))){
+
+                        p.Value.transform.position = position;
+                        spawned++;
+
+                    }
 
                 }
 
             }
 
-        }
+            if (Runner.IsServer) {
+                SpawnWeapons();
+                SpawnBots();
+            }
 
-        if (Runner.IsServer) {
-            SpawnWeapons();
-            SpawnBots();
-        }
+            transform.position = zone;
 
-        transform.position = zone;
+        }
 
     }
 

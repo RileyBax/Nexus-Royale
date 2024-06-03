@@ -490,7 +490,7 @@ public class Player : NetworkBehaviour
             arrowTimer = t;
         }
 
-        timer += 20;
+        //timer += 20;
 
     }
 
