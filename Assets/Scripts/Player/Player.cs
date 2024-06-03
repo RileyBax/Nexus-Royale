@@ -153,6 +153,8 @@ public class Player : NetworkBehaviour
 
         Health = 100;
 
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+
     }
 
     private void Awake()
@@ -225,12 +227,11 @@ public class Player : NetworkBehaviour
         lastHealth = Health;
 
         if(Health <= 0) {
-
+            gameManager.RPC_PlayerKilled(PlayerInfo.Username);
             Instantiate(deathEmitter, this.transform.position, Quaternion.identity);
             if(am != null) am.PlaySFX("Death", this.gameObject);
             if(HasInputAuthority) deathScreen.SetActive(true);
             transform.gameObject.SetActive(false);
-            gameManager.RPC_PlayerKilled(PlayerInfo.Username);
         }
 
         if(minimapCam != null) minimapCam.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
