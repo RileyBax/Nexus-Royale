@@ -81,10 +81,7 @@ public class Player : NetworkBehaviour
 
     public override void Spawned()
     {
-        Name = PlayerInfo.Username;
-        RPC_PlayerName(Name);
-        selectedSprite = PlayerInfo.Skin;
-        RPC_PlayerSprite(selectedSprite);
+        
         Weapons = new Weapons();
 
         this.nearbyWeapons = new List<GameObject>();
@@ -102,6 +99,11 @@ public class Player : NetworkBehaviour
 
         if (HasInputAuthority)
         {
+
+            Name = PlayerInfo.Username;
+            RPC_PlayerName(Name);
+            selectedSprite = PlayerInfo.Skin;
+            RPC_PlayerSprite(selectedSprite);
 
             CameraFollower.Singleton.SetTarget(camTarget);
 
@@ -227,11 +229,14 @@ public class Player : NetworkBehaviour
         lastHealth = Health;
 
         if(Health <= 0) {
-            gameManager.RPC_PlayerKilled(PlayerInfo.Username);
             Instantiate(deathEmitter, this.transform.position, Quaternion.identity);
             if(am != null) am.PlaySFX("Death", this.gameObject);
-            if(HasInputAuthority) deathScreen.SetActive(true);
-            transform.gameObject.SetActive(false);
+            if (HasInputAuthority)
+            {
+            gameManager.RPC_PlayerKilled(PlayerInfo.Username);
+                deathScreen.SetActive(true);
+            }
+                transform.gameObject.SetActive(false);
         }
 
         if(minimapCam != null) minimapCam.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
@@ -455,13 +460,13 @@ public class Player : NetworkBehaviour
 
     }
 
-    [Rpc]
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     private void RPC_PlayerName(string name)
     {
         Name = name;
     }
 
-    [Rpc]
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     private void RPC_PlayerSprite(int skin)
     {
         selectedSprite = skin;
