@@ -455,13 +455,13 @@ public class Player : NetworkBehaviour
 
     }
 
-    [Rpc(sources: RpcSources.InputAuthority, targets: RpcTargets.StateAuthority)]
+    [Rpc]
     private void RPC_PlayerName(string name)
     {
         Name = name;
     }
 
-    [Rpc(sources: RpcSources.InputAuthority, targets: RpcTargets.StateAuthority)]
+    [Rpc]
     private void RPC_PlayerSprite(int skin)
     {
         selectedSprite = skin;
