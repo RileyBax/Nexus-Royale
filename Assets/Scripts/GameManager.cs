@@ -198,6 +198,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
             RpcStartGame();
         }
 
+        timer -= Runner.DeltaTime;
 
         for(int i = 0; i < circlePoints; i++){
 
@@ -216,8 +217,6 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     }
 
     void FixedUpdate(){
-
-        timer -= Runner.DeltaTime;
 
         if(radius >= 10) radius -= Runner.DeltaTime;
 
@@ -273,7 +272,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
                     if (!Physics.CheckBox(position, new Vector3(1, 1, 1))){
 
-                        p.Value.transform.position = position;
+                        p.Value.gameObject.transform.position = position;
                         spawned++;
 
                     }
