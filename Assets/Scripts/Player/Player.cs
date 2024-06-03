@@ -63,6 +63,7 @@ public class Player : NetworkBehaviour
     private bool gameStarted = false;
     private bool hasWon = false;
     private float activePlayerTimer = 5.0f;
+    private GameManager gameManager;
 
     // Start is called before the first frame update
     void Start()
@@ -229,7 +230,7 @@ public class Player : NetworkBehaviour
             if(am != null) am.PlaySFX("Death", this.gameObject);
             if(HasInputAuthority) deathScreen.SetActive(true);
             transform.gameObject.SetActive(false);
-
+            gameManager.RPC_PlayerKilled(PlayerInfo.Username);
         }
 
         if(minimapCam != null) minimapCam.transform.position = new Vector3(transform.position.x, transform.position.y, -10);

@@ -13,6 +13,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     [SerializeField] private NetworkObject ShotgunPrefab;
     [SerializeField] private NetworkObject SMGPrefab;
     [SerializeField] private Tilemap Tilemap;
+    [SerializeField] private KillFeed KillFeed;
     private NetworkObject BotPrefab;
     private System.Random rand = new System.Random();
 
@@ -290,6 +291,12 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
         }
 
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_PlayerKilled(String username)
+    {
+        KillFeed.AddKillEntry(username);
     }
 
     public void CloseServer(){
