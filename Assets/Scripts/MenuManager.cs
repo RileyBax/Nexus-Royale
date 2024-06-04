@@ -28,6 +28,7 @@ public class MenuManager : MonoBehaviour
     public AudioManager am;
     [SerializeField] private Slider musicSlider;
     [SerializeField] private Slider SFXSlider;
+    [SerializeField] private TMP_InputField UsernameField;
     public TMP_Text ErrorMessage;
 
     public void HostGame()
@@ -92,7 +93,7 @@ public class MenuManager : MonoBehaviour
     private Button currentlyEquippedButton;
     private bool[] isPurchased;
 
-    async void Start()
+    void Start()
     {
 
         am = Instantiate(Resources.Load("Prefabs/Audio Manager")).GetComponent<AudioManager>();
@@ -121,7 +122,7 @@ public class MenuManager : MonoBehaviour
     public void updateUser(User user)
     {
         this.user = user;
-        Debug.Log(this.user);
+        this.UsernameField.text = user.username;
         updateCreditsText(this.user.credits);
     }
 
@@ -173,6 +174,26 @@ public class MenuManager : MonoBehaviour
         {
             
             OnEquipButtonClicked(clickedButton, index);
+        }
+    }
+
+    public async void OnUpdateUsernameButtonClicked()
+    {
+        string username = this.UsernameField.text;
+
+        if (string.IsNullOrEmpty(username))
+        {
+            this.UsernameField.text = PlayerInfo.Username;
+            return;
+        }
+
+        username = username.ToUpper();
+
+        string query = $"UPDATE {PlayerInfo.ID} SET username = \"{username}\" RETURN id, username;";
+        User[] users = await Surreal.Query<User>(query);
+        if (users.Length > 0)
+        {
+            PlayerInfo.Username = users[0].username;
         }
     }
 

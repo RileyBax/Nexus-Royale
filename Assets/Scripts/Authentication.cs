@@ -74,6 +74,8 @@ public class Authentication : MonoBehaviour
             return;
         }
         Debug.Log(users[0].unlockedSkins[0]);
+        PlayerInfo.ID = users[0].id;
+        PlayerInfo.Username = users[0].username;
         MenuManager.updateUser(users[0]);
         LoginPage.SetActive(false);
         MenuPage.SetActive(true);
