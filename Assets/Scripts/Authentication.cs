@@ -101,7 +101,7 @@ public class Authentication : MonoBehaviour
         await Login(username, password);
     }
 
-    public IEnumerator Register(string username, string password)
+    public async Task Register(string username, string password)
     {
         string json = JsonUtility.ToJson(new AuthParams(username, password));
         var request = new UnityWebRequest("https://nexus.ryanfolio.live/signup", "POST");
@@ -109,20 +109,30 @@ public class Authentication : MonoBehaviour
         request.uploadHandler = (UploadHandler)new UploadHandlerRaw(bodyRaw);
         request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
         request.SetRequestHeader("Content-Type", "application/json");
-        yield return request.SendWebRequest();
-
-        if (request.result != UnityWebRequest.Result.Success)
+        try
         {
-            // Just assuming that it is failing because of bad credentials...
-            RegisterErrorText.text = "Something went wrong.";
-            yield break;
+            await request.SendWebRequestAsync();
+
+            if (request.result != UnityWebRequest.Result.Success)
+            {
+                // Just assuming that it is failing because of bad credentials...
+                LoginErrorText.text = "Credentials Incorrect!";
+                return;
+            }
+
+            RegisterPage.SetActive(false);
+            LoginPage.SetActive(true);
+
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError(ex);
         }
 
-        RegisterPage.SetActive(false);
-        LoginPage.SetActive(true);
+        
     }
 
-    public void RegisterHandler()
+    public async void RegisterHandler()
     {
         string username = "", password = "", confirmPassword = "";
 
@@ -152,7 +162,7 @@ public class Authentication : MonoBehaviour
             return;
         }
 
-        StartCoroutine(Register(username, password));
+        await Register(username, password);
     }
 
 
