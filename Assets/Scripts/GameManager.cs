@@ -31,6 +31,8 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     private float width = 0.25f;
     private Vector2[] colliderPoints;
     [SerializeField] private AudioManager am;
+    [Networked] public string playerDeath {get;set;}
+    private string lastDeath = "";
         
     public void Start(){
 
@@ -59,6 +61,8 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         timer = 30.0f;
 
         radius = 400.0f;
+
+        playerDeath = "";
 
     }
 
@@ -239,6 +243,13 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         zoneCollider.SetPath(0, colliderPoints);
         transform.position = zone;
 
+        if(!lastDeath.Equals(playerDeath)){
+
+            PlayerKilled(playerDeath);
+
+        }
+        lastDeath = playerDeath;
+
     }
 
     [Rpc]
@@ -292,8 +303,8 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
     }
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All, Channel = RpcChannel.Reliable)]
-    public void RPC_PlayerKilled(String username)
+
+    public void PlayerKilled(String username)
     {
         KillFeed.AddKillEntry(username);
     }
