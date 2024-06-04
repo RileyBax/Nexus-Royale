@@ -74,8 +74,88 @@ public class Player : NetworkBehaviour
             clientEquipped[i] = false;
 
         }
+        
+        try {
+            for(int i = 0; i < inventoryUI.Length; i++) inventoryUI[i] = GameObject.Find("UI").transform.GetChild(0).GetChild(i).GetChild(0).GetComponent<UnityEngine.UI.Image>();
+        }
+        catch{
 
-        for(int i = 0; i < inventoryUI.Length; i++) inventoryUI[i] = GameObject.Find("UI").transform.GetChild(0).GetChild(i).GetChild(0).GetComponent<UnityEngine.UI.Image>();
+            Weapons = new Weapons();
+
+            this.nearbyWeapons = new List<GameObject>();
+            this.inventoryUI = new UnityEngine.UI.Image[3];
+
+            try{
+                am = GameObject.Find("Audio Manager(Clone)").GetComponent<AudioManager>();
+            }
+            catch{
+                am = Instantiate(Resources.Load<AudioManager>("Prefabs/Audio Manager"));
+            }
+
+            am.mVolume = PlayerInfo.MusicVolume;
+            am.sVolume = PlayerInfo.SoundVolume;
+
+            if (HasInputAuthority)
+            {
+
+                Name = PlayerInfo.Username;
+                RPC_PlayerName(Name);
+                selectedSprite = PlayerInfo.Skin;
+                RPC_PlayerSprite(selectedSprite);
+
+                CameraFollower.Singleton.SetTarget(camTarget);
+
+                hud = GameObject.Find("UI");
+                hud.transform.GetChild(0).transform.position = new Vector3(5.2f, -3.5f);
+                for(int i = 0; i < inventoryUI.Length; i++) inventoryUI[i] = hud.transform.GetChild(0).GetChild(i).GetChild(0).GetComponent<UnityEngine.UI.Image>();
+                
+
+                healthbar = Instantiate(healthbarObject, hud.transform).GetComponentsInChildren<RectTransform>()[1];
+                healthbarLength = 570;
+                healthbar.SetAnchors(0.025f, 0.975f, 0.5f, 0.5f);
+                healthbar.offsetMin = new Vector2(0, healthbar.offsetMin.y);
+                healthbar.offsetMax = new Vector2(0, healthbar.offsetMax.y);
+
+                lobbyTimerScript = Instantiate(LobbyTimerObject, hud.transform).GetComponent<LobbyTimerScript>();
+
+                hud.transform.GetChild(1).GetComponent<TextMeshProUGUI>().fontSize = 32;
+                hud.transform.GetChild(1).GetComponent<TextMeshProUGUI>().fontStyle = FontStyles.Bold;
+                hud.transform.GetChild(1).GetComponent<TextMeshProUGUI>().alignment = TextAlignmentOptions.Right;
+
+                minimap = Instantiate(minimapObject, hud.transform);
+
+                minimapCam = Instantiate(minimapCamObject);
+
+                // arrow doesnt look good but works, is very jittery to host
+                arrow = Instantiate(arrowObject).GetComponent<ArrowScript>();
+                arrow.zone = zone;
+                arrow.gameObject.SetActive(false);
+
+                am.AuthPlayer = this.gameObject;
+
+                ePopup = Instantiate(ePopupObject, this.transform);
+                ePopup.SetActive(false);
+
+                deathScreen = GameObject.Find("DeathScreen");
+                winScreen = GameObject.Find("WinScreen");
+
+                deathScreen.SetActive(false);
+                winScreen.SetActive(false);
+
+                am.PlayMusic("Game");
+
+            }
+
+            spriteIdle = Resources.LoadAll<Sprite>("Sprites/" + selectedSprite + " idle");
+            spriteWalk = Resources.LoadAll<Sprite>("Sprites/" + selectedSprite + " walk");
+
+            setTimer(timer);
+
+            Health = 100;
+
+            gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+
+        }
         
     }
 
@@ -231,11 +311,12 @@ public class Player : NetworkBehaviour
         if(Health <= 0) {
             Instantiate(deathEmitter, this.transform.position, Quaternion.identity);
             if(am != null) am.PlaySFX("Death", this.gameObject);
-            if (HasInputAuthority)
-            {
-                gameManager.playerDeath = this.Name;
-                deathScreen.SetActive(true);
-            }
+            
+                if(Runner.IsServer) gameManager.SendMessage("SetPlayerDeath", this.Name);
+                if (HasInputAuthority)
+                {
+                    deathScreen.SetActive(true);
+                }
                 transform.gameObject.SetActive(false);
         }
 

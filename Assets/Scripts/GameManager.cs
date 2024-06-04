@@ -32,7 +32,7 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     private Vector2[] colliderPoints;
     [SerializeField] private AudioManager am;
     [Networked] public string playerDeath {get;set;}
-    private string lastDeath = "";
+    [Networked] private string lastDeath {get;set;}
         
     public void Start(){
 
@@ -62,8 +62,6 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
         radius = 400.0f;
 
-        playerDeath = "";
-
     }
 
     public override void Spawned()
@@ -76,7 +74,10 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         
         Instantiate(am);
 
-        //Runner.Spawn(SMGPrefab, new Vector3(0,0,0));
+        Runner.Spawn(SMGPrefab, new Vector3(0,0,0));
+
+        playerDeath = "HELP";
+        lastDeath = "HELP";
 
     }
 
@@ -348,6 +349,12 @@ public class GameManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
             Runner.Shutdown();
             Application.Quit();
         }
+
+    }
+
+    public void SetPlayerDeath(string name){
+
+        playerDeath = name;
 
     }
 
